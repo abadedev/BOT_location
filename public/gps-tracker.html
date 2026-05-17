@@ -421,40 +421,14 @@
     }
 
     async function sendLocation(technician, lat, lng, accuracy, timestamp) {
-      const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
-      const formattedTime = formatDateTime(timestamp);
-      const accuracyText = accuracy < 1000 ? `${Math.round(accuracy)}m` : `${(accuracy/1000).toFixed(1)}km`;
-      
-      const message = `📍 *Localização do Técnico*
-👤 Técnico: ${technician}
-🕐 Horário: ${formattedTime}
-📏 Precisão: ${accuracyText}
-🗺️ ${mapsLink}`;
-
-      const params = new URLSearchParams();
-      params.append('DIALOG_ID', DIALOG_ID);
-      params.append('MESSAGE', message);
-      params.append('URL_PREVIEW', 'Y');
-
-      const response = await fetch(WEBHOOK_URL, {
+      const response = await fetch('/api/send-location', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params.toString()
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error_description || data.error);
-      }
-
-      return data;
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ technician, lat, lng, accuracy })
+      })
+      const data = await response.json()
+      if (data.error) throw new Error(data.error_description || data.error)
+      return data
     }
 
     function updateGPSInfo(lat, lng, accuracy, timestamp) {
