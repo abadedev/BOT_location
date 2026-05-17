@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
   const { technician, lat, lng, accuracy } = await req.json()
 
   const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`
-  const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-  const message = `📍 *${technician}* — ${hora}\n🗺️ ${mapsLink}\n📏 Precisão: ±${Math.round(accuracy)}m`
+  const horario = new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  const message = `📍 *Localização do Técnico*\n👤 Técnico: ${technician}\n🕐 Horário: ${horario}\n📏 Precisão: ${Math.round(accuracy)}m\n🗺️ ${mapsLink}`
 
   const body = new URLSearchParams({ DIALOG_ID, MESSAGE: message, URL_PREVIEW: 'Y' })
   const res = await fetch(`${USER_WEBHOOK}/im.message.add`, {
