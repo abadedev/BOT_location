@@ -332,9 +332,8 @@
     const timestampEl = document.getElementById('timestamp');
 
     const WEBHOOK_URL = 'https://dstech.bitrix24.com.br/rest/69/04xla54jit6aesgn/imbot.message.add';
-    const DIALOG_ID = 'chat6359';
+    const DIALOG_ID = 'chat6401';
     const BOT_ID = '247';
-    const CLIENT_ID = 'tvaz3m4kirtlmbq7rnpj5hxowzihtrrm';
 
     let currentState = 'idle';
 
@@ -438,7 +437,6 @@
       params.append('MESSAGE', message);
       params.append('URL_PREVIEW', 'Y');
       params.append('BOT_ID', BOT_ID);
-      params.append('CLIENT_ID', CLIENT_ID);
 
       const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
