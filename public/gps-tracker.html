@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f0f0f">
+  <title>GPS Técnico - DS Tech</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0f0f0f;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #252525;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-glow: rgba(245, 158, 11, 0.3);
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666;
+      --success: #22c55e;
+      --error: #ef4444;
+      --border: #333;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .container {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 12px 0 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header .subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Spacer para empurrar conteúdo para baixo */
+    .spacer {
+      flex: 1;
+      min-height: 40px;
+    }
+
+    /* Área de informações GPS */
+    .gps-info {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      min-height: 100px;
+    }
+
+    .gps-info.hidden {
+      display: none;
+    }
+
+    .gps-info .label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .gps-info .coords {
+      font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .gps-info .accuracy {
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .gps-info .timestamp {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    /* Dropdown de técnico */
+    .technician-select {
+      margin-bottom: 24px;
+    }
+
+    .technician-select label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .technician-select select {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-primary);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .technician-select select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Botão principal */
+    .main-button {
+      width: 100%;
+      padding: 28px 24px;
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .main-button:active {
+      transform: scale(0.98);
+    }
+
+    .main-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .main-button.loading {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .main-button.success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .main-button.error {
+      background: var(--error);
+      color: #fff;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Ícone de status */
+    .status-icon {
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    /* Status feedback */
+    .status-bar {
+      text-align: center;
+      padding: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      min-height: 44px;
+    }
+
+    .status-bar.success {
+      color: var(--success);
+    }
+
+    .status-bar.error {
+      color: var(--error);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 16px 0;
+      margin-top: auto;
+    }
+
+    .footer p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Pulse animation para estado de loading */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .pulse {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Glow effect no botão */
+    .main-button:not(:disabled):not(.loading):hover {
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>📍 Enviar Localização</h1>
+      <p class="subtitle">DS Tech - Técnicos de Campo</p>
+    </header>
+
+    <div class="spacer"></div>
+
+    <div id="gpsInfo" class="gps-info hidden">
+      <div class="label">Coordenadas Capturadas</div>
+      <div id="coords" class="coords">--</div>
+      <div id="accuracy" class="accuracy">--</div>
+      <div id="timestamp" class="timestamp">--</div>
+    </div>
+
+    <div class="technician-select">
+      <label for="technician">Selecione o Técnico</label>
+      <select id="technician">
+        <option value="">-- Escolha seu nome --</option>
+        <optgroup label="Itamaraju">
+          <option value="Juscelino">Juscelino</option>
+          <option value="Robson Lima">Robson Lima</option>
+        </optgroup>
+        <optgroup label="Teixeira de Freitas">
+          <option value="Anilson">Anilson</option>
+          <option value="Diego">Diego</option>
+          <option value="Elvis">Elvis</option>
+          <option value="Ian">Ian</option>
+          <option value="Jhonata">Jhonata</option>
+          <option value="José Antônio">José Antônio</option>
+          <option value="Levi">Levi</option>
+          <option value="Mateus Figueira">Mateus Figueira</option>
+          <option value="Matheus">Matheus</option>
+          <option value="Romário">Romário</option>
+          <option value="Robson Lopes">Robson Lopes</option>
+          <option value="Rogério">Rogério</option>
+        </optgroup>
+        <optgroup label="Alcobaça">
+          <option value="Mauro">Mauro</option>
+          <option value="Franklin">Franklin</option>
+        </optgroup>
+        <optgroup label="Caravelas">
+          <option value="Bruno">Bruno</option>
+          <option value="Anthony">Anthony</option>
+        </optgroup>
+        <optgroup label="Cumuruxatiba">
+          <option value="Samuel">Samuel</option>
+        </optgroup>
+        <optgroup label="Posto da Mata">
+          <option value="Jonatas Chaves">Jonatas Chaves</option>
+        </optgroup>
+        <optgroup label="Prado">
+          <option value="Lucas">Lucas</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <button id="mainBtn" class="main-button">
+      Capturar e Enviar GPS
+    </button>
+
+    <div id="statusBar" class="status-bar">
+      Selecione seu nome e toque no botão
+    </div>
+
+    <footer class="footer">
+      <p>Desenvolvido para uso em campo</p>
+    </footer>
+  </div>
+
+  <script>
+    const mainBtn = document.getElementById('mainBtn');
+    const technicianSelect = document.getElementById('technician');
+    const statusBar = document.getElementById('statusBar');
+    const gpsInfo = document.getElementById('gpsInfo');
+    const coordsEl = document.getElementById('coords');
+    const accuracyEl = document.getElementById('accuracy');
+    const timestampEl = document.getElementById('timestamp');
+
+    const WEBHOOK_URL = 'https://dstech.bitrix24.com.br/rest/69/s8bbsedmo961dm9v/im.message.add';
+    const DIALOG_ID = 'chat6359';
+
+    let currentState = 'idle';
+
+    function setState(state, message) {
+      currentState = state;
+      
+      mainBtn.classList.remove('loading', 'success', 'error');
+      statusBar.classList.remove('success', 'error');
+      
+      switch(state) {
+        case 'idle':
+          mainBtn.disabled = false;
+          mainBtn.innerHTML = 'Capturar e Enviar GPS';
+          break;
+        case 'gps':
+          mainBtn.disabled = true;
+          mainBtn.classList.add('loading');
+          mainBtn.innerHTML = '<span class="spinner"></span>Obtendo GPS...';
+          break;
+        case 'sending':
+          mainBtn.disabled = true;
+          mainBtn.classList.add('loading');
+          mainBtn.innerHTML = '<span class="spinner"></span>Enviando...';
+          break;
+        case 'success':
+          mainBtn.disabled = false;
+          mainBtn.classList.add('success');
+          mainBtn.innerHTML = '<span class="status-icon">✓</span>Enviado!';
+          statusBar.classList.add('success');
+          setTimeout(() => setState('idle', 'Pronto para novo envio'), 3000);
+          break;
+        case 'error':
+          mainBtn.disabled = false;
+          mainBtn.classList.add('error');
+          mainBtn.innerHTML = '<span class="status-icon">✕</span>Erro';
+          statusBar.classList.add('error');
+          setTimeout(() => setState('idle', 'Tente novamente'), 3000);
+          break;
+      }
+      
+      statusBar.textContent = message;
+    }
+
+    function formatDateTime(date) {
+      return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+
+    function getGPSPosition() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocalização não suportada'));
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => resolve(position),
+          (error) => {
+            let msg = 'Erro ao obter GPS';
+            switch(error.code) {
+              case error.PERMISSION_DENIED:
+                msg = 'Permissão de GPS negada';
+                break;
+              case error.POSITION_UNAVAILABLE:
+                msg = 'GPS indisponível';
+                break;
+              case error.TIMEOUT:
+                msg = 'Tempo esgotado ao obter GPS';
+                break;
+            }
+            reject(new Error(msg));
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+          }
+        );
+      });
+    }
+
+    async function sendLocation(technician, lat, lng, accuracy, timestamp) {
+      const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+      const formattedTime = formatDateTime(timestamp);
+      const accuracyText = accuracy < 1000 ? `${Math.round(accuracy)}m` : `${(accuracy/1000).toFixed(1)}km`;
+      
+      const message = `📍 *Localização do Técnico*
+👤 Técnico: ${technician}
+🕐 Horário: ${formattedTime}
+📏 Precisão: ${accuracyText}
+🗺️ ${mapsLink}`;
+
+      const params = new URLSearchParams();
+      params.append('DIALOG_ID', DIALOG_ID);
+      params.append('MESSAGE', message);
+      params.append('URL_PREVIEW', 'Y');
+
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error_description || data.error);
+      }
+
+      return data;
+    }
+
+    function updateGPSInfo(lat, lng, accuracy, timestamp) {
+      gpsInfo.classList.remove('hidden');
+      coordsEl.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      
+      const accuracyText = accuracy < 1000 
+        ? `Precisão: ±${Math.round(accuracy)} metros` 
+        : `Precisão: ±${(accuracy/1000).toFixed(1)} km`;
+      accuracyEl.textContent = accuracyText;
+      
+      timestampEl.textContent = `Capturado em: ${formatDateTime(timestamp)}`;
+    }
+
+    async function handleClick() {
+      const technician = technicianSelect.value;
+      
+      if (!technician) {
+        setState('error', 'Selecione seu nome primeiro');
+        return;
+      }
+
+      try {
+        // Obter GPS
+        setState('gps', 'Obtendo sua localização...');
+        const position = await getGPSPosition();
+        
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+        const timestamp = new Date();
+        
+        updateGPSInfo(lat, lng, accuracy, timestamp);
+        
+        // Enviar para o webhook
+        setState('sending', 'Enviando localização...');
+        await sendLocation(technician, lat, lng, accuracy, timestamp);
+        
+        setState('success', 'Localização enviada com sucesso!');
+        
+      } catch (error) {
+        console.error('Erro:', error);
+        setState('error', error.message || 'Erro ao processar');
+      }
+    }
+
+    mainBtn.addEventListener('click', handleClick);
+
+    // Prevenir zoom no double tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  </script>
+</body>
+</html>
