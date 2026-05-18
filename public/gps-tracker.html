@@ -208,25 +208,29 @@
     }
 
     .chat-chips {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
 
     .chat-chip {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      padding: 10px 14px;
+      padding: 10px 8px;
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12px;
+      line-height: 1.2;
+      text-align: center;
       color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      min-width: 0;
     }
 
     .chat-chip:active {
@@ -242,6 +246,7 @@
     .chat-chip .chip-check {
       width: 14px;
       height: 14px;
+      flex-shrink: 0;
       border-radius: 50%;
       border: 2px solid var(--text-muted);
       transition: all 0.2s ease;
