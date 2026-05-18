@@ -239,18 +239,6 @@
       color: var(--accent);
     }
 
-    .chat-chip.default {
-      background: rgba(245, 166, 35, 0.1);
-      border-color: var(--accent);
-      color: var(--accent);
-      cursor: default;
-    }
-
-    .chat-chip.default::before {
-      content: '✓';
-      font-size: 11px;
-    }
-
     .chat-chip .chip-check {
       width: 14px;
       height: 14px;
@@ -424,7 +412,10 @@
       <div class="chat-selector">
         <div class="section-label">Enviar para</div>
         <div class="chat-chips" id="chatChips">
-          <div class="chat-chip default" data-id="default">DSTech | Infraestrutura</div>
+          <div class="chat-chip selected" data-id="default">
+            <span class="chip-check"></span>
+            DSTech | Infraestrutura
+          </div>
           <div class="chat-chip" data-id="supervisores">
             <span class="chip-check"></span>
             Supervisores
@@ -487,7 +478,7 @@
     // ===============================
     const CHAT_IDS = {
       default: 'chat6401',
-      supervisores: 'chat6401',
+      supervisores: 'chat857',
       noc: 'chat6401'
     }
 
@@ -501,7 +492,7 @@
     const mainButton = document.getElementById('mainButton');
     const technicianSelect = document.getElementById('technicianSelect');
     const helperText = document.getElementById('helperText');
-    const chatChips = document.querySelectorAll('.chat-chip:not(.default)');
+    const chatChips = document.querySelectorAll('.chat-chip');
 
     // ===============================
     // ESTADO
