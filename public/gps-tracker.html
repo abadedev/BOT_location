@@ -588,29 +588,28 @@
     async function loadChats() {
       modalList.innerHTML = '<div class="modal-loading">Carregando conversas…</div>'
       try {
-        const [recentRes, groupsRes] = await Promise.all([
-          fetch(`${WEBHOOK}/im.recent.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({})),
-          fetch(`${WEBHOOK}/im.chat.get.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({}))
-        ])
+        if (window.bitrixChats && window.bitrixChats.length > 0) {
+          allChats = window.bitrixChats.map(c => ({
+            id: c.id,
+            name: c.name,
+            isGroup: c.type === 'chat'
+          })).sort((a, b) => a.name.localeCompare(b.name))
+          renderList(searchChat.value)
+          return
+        }
 
-        const map = new Map()
-
-        const recent = recentRes.result?.items || []
-        recent.forEach(i => {
-          if (!i.title) return
-          const isGroup = !!i.chat_id
-          const id = isGroup ? `chat${i.chat_id}` : `dialog${i.id}`
-          map.set(id, { id, name: i.title, isGroup })
-        })
-
-        const groups = groupsRes.result || []
-        groups.forEach(g => {
-          if (!g.title || !g.id) return
-          const id = `chat${g.id}`
-          if (!map.has(id)) map.set(id, { id, name: g.title, isGroup: true })
-        })
-
-        allChats = Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name))
+        // fallback: busca pela conta de integração
+        const res = await fetch(`${WEBHOOK}/im.recent.list.json?LIMIT=50`)
+        const data = await res.json()
+        const items = data.result?.items || []
+        allChats = items
+          .filter(i => i.title)
+          .map(i => ({
+            id: i.type === 'chat' ? 'chat' + i.id : String(i.id),
+            name: i.title,
+            isGroup: i.type === 'chat'
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name))
         renderList(searchChat.value)
       } catch {
         modalList.innerHTML = '<div class="modal-loading">Erro ao carregar conversas</div>'
