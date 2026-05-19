@@ -502,10 +502,12 @@
     const searchChat   = document.getElementById('searchChat')
 
     let bitrixUserName = null
-    let extraChats = []       // [{id, name, isGroup}]
-    let allChats   = []
-    let pendingChats = []
+    let extraChats    = []   // [{id, name, isGroup}]
+    let allChats      = []
+    let pendingChats  = []
     let defaultSelected = true
+    let nextCursor    = null  // paginação de recentes
+    let searchTimer   = null
 
     // ── Recebe usuário via postMessage ─────────────────────────
     window.addEventListener('message', e => {
@@ -513,6 +515,9 @@
         bitrixUserName = e.data.name
         greeting.textContent = `Olá, ${bitrixUserName}`
         nameInputWrapper.classList.remove('visible')
+        if (e.data.chats && e.data.chats.length > 0) {
+          window.bitrixChats = e.data.chats
+        }
       }
     })
 
@@ -548,86 +553,114 @@
     chipOutros.addEventListener('click', openModal)
 
     // ── Modal de chats ─────────────────────────────────────────
-    function renderList(filter = '') {
-      const term = filter.toLowerCase()
-      const items = allChats.filter(c => c.name.toLowerCase().includes(term))
+    function itemHTML(c) {
+      const sel  = pendingChats.some(p => p.id === c.id)
+      const icon = c.isGroup ? '👥' : '👤'
+      return `<div class="modal-item ${sel ? 'selected' : ''}" data-id="${c.id}" data-name="${c.name.replace(/"/g,'&quot;')}" data-group="${c.isGroup ? '1' : '0'}">
+        <div class="avatar">${icon}</div>
+        <span class="item-name">${c.name}</span>
+        <div class="item-check"></div>
+      </div>`
+    }
 
+    function bindItems() {
+      modalList.querySelectorAll('.modal-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.dataset.id, name = el.dataset.name, isGroup = el.dataset.group === '1'
+          const idx = pendingChats.findIndex(p => p.id === id)
+          if (idx >= 0) { pendingChats.splice(idx, 1); el.classList.remove('selected') }
+          else           { pendingChats.push({ id, name, isGroup }); el.classList.add('selected') }
+        })
+      })
+    }
+
+    function renderRecent() {
+      if (!allChats.length) {
+        modalList.innerHTML = '<div class="modal-loading">Nenhuma conversa encontrada</div>'
+        return
+      }
+      modalList.innerHTML = allChats.map(itemHTML).join('')
+      if (nextCursor) {
+        const btn = document.createElement('button')
+        btn.className = 'modal-confirm'
+        btn.style.cssText = 'margin:12px 20px;width:calc(100% - 40px);background:var(--bg);color:var(--text-secondary);border:1px solid var(--border);'
+        btn.textContent = 'Carregar mais'
+        btn.onclick = loadMore
+        modalList.appendChild(btn)
+      }
+      bindItems()
+    }
+
+    function renderSearch(items) {
       if (!items.length) {
         modalList.innerHTML = '<div class="modal-loading">Nenhuma conversa encontrada</div>'
         return
       }
-
-      modalList.innerHTML = items.map(c => {
-        const sel = pendingChats.some(p => p.id === c.id)
-        const icon = c.isGroup ? '👥' : '👤'
-        return `
-          <div class="modal-item ${sel ? 'selected' : ''}" data-id="${c.id}" data-name="${c.name.replace(/"/g,'&quot;')}" data-group="${c.isGroup ? '1' : '0'}">
-            <div class="avatar">${icon}</div>
-            <span class="item-name">${c.name}</span>
-            <div class="item-check"></div>
-          </div>`
-      }).join('')
-
-      modalList.querySelectorAll('.modal-item').forEach(el => {
-        el.addEventListener('click', () => {
-          const id = el.dataset.id
-          const name = el.dataset.name
-          const isGroup = el.dataset.group === '1'
-          const idx = pendingChats.findIndex(p => p.id === id)
-          if (idx >= 0) {
-            pendingChats.splice(idx, 1)
-            el.classList.remove('selected')
-          } else {
-            pendingChats.push({ id, name, isGroup })
-            el.classList.add('selected')
-          }
-        })
-      })
+      modalList.innerHTML = items.map(itemHTML).join('')
+      bindItems()
     }
 
     async function loadChats() {
       modalList.innerHTML = '<div class="modal-loading">Carregando conversas…</div>'
       try {
-        if (window.bitrixChats && window.bitrixChats.length > 0) {
-          allChats = window.bitrixChats.map(c => ({
-            id: c.id,
-            name: c.name,
-            isGroup: c.type === 'chat'
-          })).sort((a, b) => a.name.localeCompare(b.name))
-          renderList(searchChat.value)
-          return
-        }
-
-        // fallback: busca pela conta de integração
-        const res = await fetch(`${WEBHOOK}/im.recent.list.json?LIMIT=50`)
+        const res  = await fetch('/api/bitrix/chats')
         const data = await res.json()
-        const items = data.result?.items || []
-        allChats = items
-          .filter(i => i.title)
-          .map(i => ({
-            id: i.type === 'chat' ? 'chat' + i.id : String(i.id),
-            name: i.title,
-            isGroup: i.type === 'chat'
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name))
-        renderList(searchChat.value)
+        allChats   = data.items.map(c => ({ id: c.dialogId, name: c.name, isGroup: c.type === 'chat' }))
+        nextCursor = data.nextCursor || null
+        renderRecent()
       } catch {
         modalList.innerHTML = '<div class="modal-loading">Erro ao carregar conversas</div>'
+      }
+    }
+
+    async function loadMore() {
+      if (!nextCursor) return
+      try {
+        const res  = await fetch(`/api/bitrix/chats?lastMessageDate=${encodeURIComponent(nextCursor)}`)
+        const data = await res.json()
+        const more = data.items.map(c => ({ id: c.dialogId, name: c.name, isGroup: c.type === 'chat' }))
+        allChats   = [...allChats, ...more]
+        nextCursor = data.nextCursor || null
+        renderRecent()
+      } catch { /* silencia */ }
+    }
+
+    async function searchChats(q) {
+      modalList.innerHTML = '<div class="modal-loading">Buscando…</div>'
+      try {
+        const res  = await fetch(`/api/bitrix/search-chats?q=${encodeURIComponent(q)}&offset=0&limit=20`)
+        const data = await res.json()
+        const items = data.items.map(c => ({ id: c.dialogId, name: c.name, isGroup: c.type === 'chat' }))
+        renderSearch(items)
+      } catch {
+        modalList.innerHTML = '<div class="modal-loading">Erro na busca</div>'
       }
     }
 
     function openModal() {
       pendingChats = [...extraChats]
       modalOverlay.classList.add('open')
+      searchChat.value = ''
       if (!allChats.length) loadChats()
-      else renderList(searchChat.value)
+      else renderRecent()
     }
 
     function closeModal() { modalOverlay.classList.remove('open') }
 
     modalClose.addEventListener('click', closeModal)
     modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal() })
-    searchChat.addEventListener('input', () => renderList(searchChat.value))
+
+    searchChat.addEventListener('input', () => {
+      const q = searchChat.value.trim()
+      clearTimeout(searchTimer)
+      if (q.length === 0) {
+        renderRecent()
+      } else if (q.length < 3) {
+        modalList.innerHTML = '<div class="modal-loading">Digite 3 caracteres para buscar</div>'
+      } else {
+        searchTimer = setTimeout(() => searchChats(q), 350)
+      }
+    })
 
     modalConfirm.addEventListener('click', () => {
       extraChats = [...pendingChats]
