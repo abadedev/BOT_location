@@ -15,18 +15,29 @@ iframe { width: 100%; height: 100vh; border: none; display: block; }
 <iframe id="gpsFrame" src="https://bot-location.vercel.app/gps-tracker.html" allow="geolocation *"></iframe>
 <script>
 BX24.init(function() {
-  BX24.callMethod('user.current', {}, function(result) {
-    const user = result.data()
-    if (user) {
+  BX24.callMethod('user.current', {}, function(userResult) {
+    const user = userResult.data()
+
+    BX24.callMethod('im.recent.list', { LIMIT: 50 }, function(chatsResult) {
+      const items = chatsResult.data() || []
+      const chats = items
+        .filter(item => item.type === 'chat' && item.title)
+        .map(item => ({
+          id: item.id,
+          name: item.title,
+          type: item.type
+        }))
+
       const frame = document.getElementById('gpsFrame')
       frame.onload = function() {
         frame.contentWindow.postMessage({
           type: 'BITRIX_USER',
           name: (user.NAME + ' ' + (user.LAST_NAME || '')).trim(),
-          id: user.ID
+          id: user.ID,
+          chats: chats
         }, '*')
       }
-    }
+    })
   })
 })
 </script>

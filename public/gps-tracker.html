@@ -513,6 +513,9 @@
         bitrixUserName = e.data.name
         greeting.textContent = `Olá, ${bitrixUserName}`
         nameInputWrapper.classList.remove('visible')
+        if (e.data.chats && e.data.chats.length > 0) {
+          window.bitrixChats = e.data.chats
+        }
       }
     })
 
@@ -588,6 +591,17 @@
     async function loadChats() {
       modalList.innerHTML = '<div class="modal-loading">Carregando conversas…</div>'
       try {
+        if (window.bitrixChats && window.bitrixChats.length > 0) {
+          allChats = window.bitrixChats.map(c => ({
+            id: c.id,
+            name: c.name,
+            isGroup: c.type === 'chat'
+          })).sort((a, b) => a.name.localeCompare(b.name))
+          renderList(searchChat.value)
+          return
+        }
+
+        // fallback: busca pela conta de integração
         const [recentRes, groupsRes] = await Promise.all([
           fetch(`${WEBHOOK}/im.recent.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({})),
           fetch(`${WEBHOOK}/im.chat.get.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({}))
