@@ -656,7 +656,8 @@
       if (q.length === 0) {
         renderRecent()
       } else if (q.length < 3) {
-        modalList.innerHTML = '<div class="modal-loading">Digite 3 caracteres para buscar</div>'
+        const term = q.toLowerCase()
+        renderSearch(allChats.filter(c => c.name.toLowerCase().includes(term)))
       } else {
         searchTimer = setTimeout(() => searchChats(q), 350)
       }
