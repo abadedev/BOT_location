@@ -56,17 +56,33 @@
       color: var(--text-primary);
     }
 
-    .header-title svg {
-      width: 22px;
-      height: 22px;
-      fill: var(--accent);
+    .header-title svg { width: 22px; height: 22px; fill: var(--accent); }
+
+    .header-greeting {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      font-weight: 500;
     }
 
-    .header-subtitle {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-top: 4px;
+    /* Manual name input */
+    .name-input-wrapper {
+      margin-top: 10px;
+      display: none;
     }
+    .name-input-wrapper.visible { display: block; }
+    .name-input-wrapper input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--card);
+      color: var(--text-primary);
+      outline: none;
+      text-align: center;
+    }
+    .name-input-wrapper input:focus { border-color: var(--accent); }
 
     /* Status Area */
     .status-area {
@@ -76,16 +92,13 @@
       align-items: center;
       justify-content: center;
       padding: 32px 16px;
-      min-height: 200px;
+      min-height: 180px;
     }
 
     .status-icon {
-      width: 80px;
-      height: 80px;
+      width: 80px; height: 80px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       margin-bottom: 20px;
       transition: all 0.3s ease;
     }
@@ -174,71 +187,50 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--text-secondary);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
-    /* Technician Selector */
-    .technician-selector { margin-bottom: 12px; }
-
-    .select-wrapper { position: relative; }
-    .select-wrapper::after {
-      content: '';
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0; height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-top: 6px solid var(--text-secondary);
-      pointer-events: none;
+    .chat-chips {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
-    select {
-      width: 100%;
-      padding: 14px 40px 14px 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 15px;
-      color: var(--text-primary);
-      appearance: none;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: border-color 0.2s;
-    }
-    select:focus { outline: none; border-color: var(--accent); }
-
-    /* Btn escolher chat */
-    .btn-chat-picker {
-      width: 100%;
-      padding: 13px 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      color: var(--text-primary);
-      text-align: left;
-      cursor: pointer;
+    .chat-chip {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow);
-      transition: border-color 0.2s;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: var(--shadow);
     }
-    .btn-chat-picker:active { background: #f0f4f8; }
-    .btn-chat-picker .badge {
+    .chat-chip:active { transform: scale(0.97); }
+    .chat-chip.selected {
+      background: rgba(47,198,246,0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .chat-chip .chip-badge {
       background: var(--accent);
       color: #fff;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 7px;
       display: none;
     }
-    .btn-chat-picker .badge.visible { display: inline-block; }
+    .chat-chip .chip-badge.visible { display: inline-block; }
 
     /* Main Button */
     .main-button {
@@ -305,7 +297,7 @@
       border-radius: 20px 20px 0 0;
       width: 100%;
       max-width: 480px;
-      max-height: 75vh;
+      max-height: 80vh;
       display: flex;
       flex-direction: column;
       transform: translateY(100%);
@@ -346,10 +338,7 @@
     }
     .modal-search input:focus { border-color: var(--accent); }
 
-    .modal-list {
-      overflow-y: auto;
-      flex: 1;
-    }
+    .modal-list { overflow-y: auto; flex: 1; }
 
     .modal-item {
       display: flex;
@@ -357,7 +346,6 @@
       gap: 12px;
       padding: 12px 20px;
       cursor: pointer;
-      transition: background 0.15s;
       border-bottom: 1px solid var(--border);
       -webkit-tap-highlight-color: transparent;
     }
@@ -365,12 +353,11 @@
     .modal-item:active { background: var(--bg); }
 
     .modal-item .avatar {
-      width: 40px; height: 40px;
+      width: 38px; height: 38px;
       border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
+      background: rgba(47,198,246,0.15);
+      color: var(--accent);
+      font-size: 18px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
@@ -390,7 +377,6 @@
       border-radius: 6px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
     }
     .modal-item.selected .item-check {
       background: var(--accent);
@@ -436,7 +422,10 @@
         <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
         Enviar Localização
       </div>
-      <div class="header-subtitle">DS Tech — Técnicos de Campo</div>
+      <div class="header-greeting" id="greeting">DS Tech — Técnicos de Campo</div>
+      <div class="name-input-wrapper" id="nameInputWrapper">
+        <input type="text" id="nameInput" placeholder="Digite seu nome">
+      </div>
     </header>
 
     <div class="status-area">
@@ -448,51 +437,24 @@
         <svg id="iconError" style="display:none" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
       </div>
       <div class="status-text" id="statusText">Aguardando</div>
-      <div class="status-subtext" id="statusSubtext">Selecione seu nome e toque no botão</div>
+      <div class="status-subtext" id="statusSubtext">Toque no botão para enviar sua localização</div>
       <div class="coords-display" id="coordsDisplay"></div>
     </div>
 
     <div class="bottom-controls">
-      <div class="technician-selector">
-        <div class="section-label">Selecione o técnico</div>
-        <div class="select-wrapper">
-          <select id="technicianSelect">
-            <option value="">— Escolha seu nome —</option>
-            <option value="Anilson">Anilson</option>
-            <option value="Anthony">Anthony</option>
-            <option value="Bruno">Bruno</option>
-            <option value="Diego">Diego</option>
-            <option value="Elvis">Elvis</option>
-            <option value="Franklin">Franklin</option>
-            <option value="Ian">Ian</option>
-            <option value="Jhonata">Jhonata</option>
-            <option value="Jonatas Chaves">Jonatas Chaves</option>
-            <option value="José Antônio">José Antônio</option>
-            <option value="Juscelino">Juscelino</option>
-            <option value="Levi">Levi</option>
-            <option value="Lucas">Lucas</option>
-            <option value="Mateus Figueira">Mateus Figueira</option>
-            <option value="Matheus">Matheus</option>
-            <option value="Mauro">Mauro</option>
-            <option value="Robson Lima">Robson Lima</option>
-            <option value="Robson Lopes">Robson Lopes</option>
-            <option value="Rogério">Rogério</option>
-            <option value="Romário">Romário</option>
-            <option value="Samuel">Samuel</option>
-          </select>
+      <div class="section-label">Enviar para</div>
+      <div class="chat-chips">
+        <div class="chat-chip selected" id="chipDefault" data-id="chat6401">
+          DSTech | Infraestrutura
+        </div>
+        <div class="chat-chip" id="chipOutros">
+          <span>📤 Outros chats...</span>
+          <span class="chip-badge" id="badgeOutros"></span>
         </div>
       </div>
 
-      <button class="btn-chat-picker" id="btnEscolherChat">
-        <span>📤 Escolher destino adicional</span>
-        <span class="badge" id="badgeChats"></span>
-      </button>
-
-      <button class="main-button" id="mainButton" disabled>
-        Capturar e Enviar GPS
-      </button>
-
-      <div class="helper-text" id="helperText">Selecione seu nome para continuar</div>
+      <button class="main-button" id="mainButton">Capturar e Enviar GPS</button>
+      <div class="helper-text" id="helperText">Toque no botão para enviar sua localização</div>
     </div>
 
     <footer class="footer">Desenvolvido para uso em campo</footer>
@@ -502,7 +464,7 @@
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Destinos adicionais</span>
+        <span class="modal-title">Selecionar destinos</span>
         <button class="modal-close" id="modalClose">✕</button>
       </div>
       <div class="modal-search">
@@ -519,26 +481,48 @@
 
   <script>
     const WEBHOOK = 'https://dstech.bitrix24.com.br/rest/249/ekxs4uynroohw0ry'
-    const DEFAULT_CHAT = 'chat6401'
+    const DEFAULT_CHAT_ID = 'chat6401'
 
+    const greeting     = document.getElementById('greeting')
+    const nameInputWrapper = document.getElementById('nameInputWrapper')
+    const nameInput    = document.getElementById('nameInput')
     const statusIcon   = document.getElementById('statusIcon')
     const statusText   = document.getElementById('statusText')
     const statusSubtext = document.getElementById('statusSubtext')
     const coordsDisplay = document.getElementById('coordsDisplay')
     const mainButton   = document.getElementById('mainButton')
-    const technicianSelect = document.getElementById('technicianSelect')
     const helperText   = document.getElementById('helperText')
-    const btnEscolherChat = document.getElementById('btnEscolherChat')
-    const badgeChats   = document.getElementById('badgeChats')
+    const chipDefault  = document.getElementById('chipDefault')
+    const chipOutros   = document.getElementById('chipOutros')
+    const badgeOutros  = document.getElementById('badgeOutros')
     const modalOverlay = document.getElementById('modalOverlay')
     const modalClose   = document.getElementById('modalClose')
     const modalList    = document.getElementById('modalList')
     const modalConfirm = document.getElementById('modalConfirm')
     const searchChat   = document.getElementById('searchChat')
 
-    let extraChats = []       // [{id, name}] selecionados no modal
-    let allChats   = []       // lista completa carregada da API
-    let pendingChats = []     // seleção temporária dentro do modal
+    let bitrixUserName = null
+    let extraChats = []       // [{id, name, isGroup}]
+    let allChats   = []
+    let pendingChats = []
+    let defaultSelected = true
+
+    // ── Recebe usuário via postMessage ─────────────────────────
+    window.addEventListener('message', e => {
+      if (e.data && e.data.type === 'BITRIX_USER' && e.data.name) {
+        bitrixUserName = e.data.name
+        greeting.textContent = `Olá, ${bitrixUserName}`
+        nameInputWrapper.classList.remove('visible')
+      }
+    })
+
+    // Se em 800ms não recebeu, mostra input manual
+    setTimeout(() => {
+      if (!bitrixUserName) {
+        greeting.textContent = 'Identifique-se para continuar'
+        nameInputWrapper.classList.add('visible')
+      }
+    }, 800)
 
     // ── Status visual ──────────────────────────────────────────
     function setStatus(state, text, subtext) {
@@ -553,18 +537,17 @@
       coordsDisplay.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)} (±${Math.round(accuracy)}m)`
       coordsDisplay.classList.add('visible')
     }
-
     function hideCoords() { coordsDisplay.classList.remove('visible') }
 
-    // ── Técnico ─────────────────────────────────────────────────
-    technicianSelect.addEventListener('change', function () {
-      mainButton.disabled = !this.value
-      helperText.textContent = this.value
-        ? 'Toque no botão para enviar sua localização'
-        : 'Selecione seu nome para continuar'
+    // ── Chips ──────────────────────────────────────────────────
+    chipDefault.addEventListener('click', () => {
+      defaultSelected = !defaultSelected
+      chipDefault.classList.toggle('selected', defaultSelected)
     })
 
-    // ── Modal de chats ──────────────────────────────────────────
+    chipOutros.addEventListener('click', openModal)
+
+    // ── Modal de chats ─────────────────────────────────────────
     function renderList(filter = '') {
       const term = filter.toLowerCase()
       const items = allChats.filter(c => c.name.toLowerCase().includes(term))
@@ -576,9 +559,10 @@
 
       modalList.innerHTML = items.map(c => {
         const sel = pendingChats.some(p => p.id === c.id)
+        const icon = c.isGroup ? '👥' : '👤'
         return `
-          <div class="modal-item ${sel ? 'selected' : ''}" data-id="${c.id}" data-name="${c.name}">
-            <div class="avatar">${c.name.charAt(0).toUpperCase()}</div>
+          <div class="modal-item ${sel ? 'selected' : ''}" data-id="${c.id}" data-name="${c.name.replace(/"/g,'&quot;')}" data-group="${c.isGroup ? '1' : '0'}">
+            <div class="avatar">${icon}</div>
             <span class="item-name">${c.name}</span>
             <div class="item-check"></div>
           </div>`
@@ -588,12 +572,13 @@
         el.addEventListener('click', () => {
           const id = el.dataset.id
           const name = el.dataset.name
+          const isGroup = el.dataset.group === '1'
           const idx = pendingChats.findIndex(p => p.id === id)
           if (idx >= 0) {
             pendingChats.splice(idx, 1)
             el.classList.remove('selected')
           } else {
-            pendingChats.push({ id, name })
+            pendingChats.push({ id, name, isGroup })
             el.classList.add('selected')
           }
         })
@@ -603,51 +588,85 @@
     async function loadChats() {
       modalList.innerHTML = '<div class="modal-loading">Carregando conversas…</div>'
       try {
-        const res = await fetch(`${WEBHOOK}/im.recent.list.json`)
-        const data = await res.json()
-        const items = data.result?.items || []
-        allChats = items
-          .filter(i => i.title)
-          .map(i => ({ id: i.chat_id ? `chat${i.chat_id}` : `dialog${i.id}`, name: i.title }))
+        const [recentRes, groupsRes] = await Promise.all([
+          fetch(`${WEBHOOK}/im.recent.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({})),
+          fetch(`${WEBHOOK}/im.chat.get.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({}))
+        ])
+
+        const map = new Map()
+
+        const recent = recentRes.result?.items || []
+        recent.forEach(i => {
+          if (!i.title) return
+          const isGroup = !!i.chat_id
+          const id = isGroup ? `chat${i.chat_id}` : `dialog${i.id}`
+          map.set(id, { id, name: i.title, isGroup })
+        })
+
+        const groups = groupsRes.result || []
+        groups.forEach(g => {
+          if (!g.title || !g.id) return
+          const id = `chat${g.id}`
+          if (!map.has(id)) map.set(id, { id, name: g.title, isGroup: true })
+        })
+
+        allChats = Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name))
         renderList(searchChat.value)
       } catch {
         modalList.innerHTML = '<div class="modal-loading">Erro ao carregar conversas</div>'
       }
     }
 
-    btnEscolherChat.addEventListener('click', () => {
+    function openModal() {
       pendingChats = [...extraChats]
       modalOverlay.classList.add('open')
       if (!allChats.length) loadChats()
       else renderList(searchChat.value)
-    })
-
-    searchChat.addEventListener('input', () => renderList(searchChat.value))
+    }
 
     function closeModal() { modalOverlay.classList.remove('open') }
 
     modalClose.addEventListener('click', closeModal)
     modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal() })
+    searchChat.addEventListener('input', () => renderList(searchChat.value))
 
     modalConfirm.addEventListener('click', () => {
       extraChats = [...pendingChats]
       closeModal()
       if (extraChats.length) {
-        badgeChats.textContent = `+${extraChats.length}`
-        badgeChats.classList.add('visible')
+        badgeOutros.textContent = extraChats.length
+        badgeOutros.classList.add('visible')
+        chipOutros.classList.add('selected')
       } else {
-        badgeChats.classList.remove('visible')
+        badgeOutros.classList.remove('visible')
+        chipOutros.classList.remove('selected')
       }
     })
 
-    // ── Envio de GPS ─────────────────────────────────────────────
+    // ── Envio de GPS ────────────────────────────────────────────
     mainButton.addEventListener('click', async function () {
-      const technician = technicianSelect.value
-      if (!technician) { setStatus('error', 'Erro', 'Selecione um técnico primeiro'); return }
+      const technician = bitrixUserName || (nameInput.value || '').trim()
+
+      if (!technician) {
+        setStatus('error', 'Erro', 'Digite seu nome para continuar')
+        helperText.textContent = 'Nome é obrigatório'
+        setTimeout(() => setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização'), 3000)
+        return
+      }
+
+      const dialogIds = []
+      if (defaultSelected) dialogIds.push(DEFAULT_CHAT_ID)
+      extraChats.forEach(c => { if (!dialogIds.includes(c.id)) dialogIds.push(c.id) })
+
+      if (!dialogIds.length) {
+        setStatus('error', 'Erro', 'Selecione pelo menos um destino')
+        helperText.textContent = 'Selecione ao menos um destino'
+        setTimeout(() => setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização'), 3000)
+        return
+      }
 
       mainButton.disabled = true
       mainButton.classList.add('loading')
-      technicianSelect.disabled = true
       hideCoords()
       setStatus('locating', 'Obtendo GPS...', 'Aguarde enquanto capturamos sua localização')
 
@@ -662,8 +681,6 @@
         showCoords(lat, lng, accuracy)
         setStatus('sending', 'Enviando...', 'Transmitindo localização para o servidor')
 
-        const dialogIds = [DEFAULT_CHAT, ...extraChats.map(c => c.id)]
-
         const response = await fetch('/api/send-location', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -672,15 +689,14 @@
 
         if (!response.ok) throw new Error('Erro ao enviar localização')
 
-        setStatus('success', 'Enviado!', 'Localização registrada com sucesso')
+        setStatus('success', 'Enviado!', `Localização enviada para ${dialogIds.length} destino(s)`)
         helperText.textContent = 'Localização enviada com sucesso'
 
         setTimeout(() => {
-          setStatus('idle', 'Aguardando', 'Selecione seu nome e toque no botão')
+          setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização')
           hideCoords()
           mainButton.disabled = false
           mainButton.classList.remove('loading')
-          technicianSelect.disabled = false
           helperText.textContent = 'Toque no botão para enviar sua localização'
         }, 5000)
 
@@ -694,9 +710,8 @@
         helperText.textContent = 'Tente novamente'
         mainButton.disabled = false
         mainButton.classList.remove('loading')
-        technicianSelect.disabled = false
 
-        setTimeout(() => setStatus('idle', 'Aguardando', 'Selecione seu nome e toque no botão'), 5000)
+        setTimeout(() => setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização'), 5000)
       }
     })
   </script>
