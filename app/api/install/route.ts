@@ -7,7 +7,6 @@ const GPS_HTML = (domain: string) => `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache">
 <title>Enviar Localização</title>
 <style>
 body { margin: 0; background: #0a0a0a; }
@@ -19,36 +18,40 @@ iframe { width: 100%; height: 100vh; border: none; display: block; }
 </body>
 </html>`
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const code = searchParams.get('code')
-  const domain = searchParams.get('DOMAIN') || searchParams.get('domain') || ''
+async function getTokenFromAppSid(domain: string, appSid: string) {
+  const res = await fetch(`https://${domain}/oauth/token/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: process.env.BITRIX_CLIENT_ID!,
+      client_secret: process.env.BITRIX_CLIENT_SECRET!,
+      app_sid: appSid,
+    })
+  })
+  return res.json()
+}
 
-  if (code && domain) {
+export async function POST(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const domain = searchParams.get('DOMAIN') || 'dstech.bitrix24.com.br'
+  const appSid = searchParams.get('APP_SID') || ''
+
+  if (appSid && domain) {
     try {
-      const res = await fetch(`https://${domain}/oauth/token/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: process.env.BITRIX_CLIENT_ID!,
-          client_secret: process.env.BITRIX_CLIENT_SECRET!,
-          code,
-          redirect_uri: process.env.BITRIX_REDIRECT_URI!,
-        })
-      })
-      const data = await res.json()
+      const data = await getTokenFromAppSid(domain, appSid)
+      console.log('Token response:', JSON.stringify(data))
       if (data.access_token) {
         await redis.set(`bitrix_auth:${domain}`, JSON.stringify({
           access_token: data.access_token,
-          refresh_token: data.refresh_token,
+          refresh_token: data.refresh_token || '',
           domain,
-          expires_in: data.expires_in,
+          expires_in: data.expires_in || 3600,
           installed_at: Date.now()
         }))
       }
     } catch (e) {
-      console.error('OAuth error:', e)
+      console.error('Token error:', e)
     }
   }
 
@@ -60,39 +63,9 @@ export async function GET(req: NextRequest) {
   })
 }
 
-export async function POST(req: NextRequest) {
-  const body = await req.text()
-  const params = new URLSearchParams(body)
-  const domain = params.get('DOMAIN') || params.get('domain') || ''
-  const code = params.get('code') || ''
-
-  if (code && domain) {
-    try {
-      const res = await fetch(`https://${domain}/oauth/token/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: process.env.BITRIX_CLIENT_ID!,
-          client_secret: process.env.BITRIX_CLIENT_SECRET!,
-          code,
-          redirect_uri: process.env.BITRIX_REDIRECT_URI!,
-        })
-      })
-      const data = await res.json()
-      if (data.access_token) {
-        await redis.set(`bitrix_auth:${domain}`, JSON.stringify({
-          access_token: data.access_token,
-          refresh_token: data.refresh_token,
-          domain,
-          expires_in: data.expires_in,
-          installed_at: Date.now()
-        }))
-      }
-    } catch (e) {
-      console.error('OAuth error:', e)
-    }
-  }
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const domain = searchParams.get('DOMAIN') || 'dstech.bitrix24.com.br'
 
   return new NextResponse(GPS_HTML(domain), {
     headers: {
