@@ -3,33 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="theme-color" content="#f5f7fa">
   <title>Enviar Localização - DS Tech</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg-primary: #0a0a0a;
-      --bg-secondary: #141414;
-      --bg-tertiary: #1a1a1a;
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0a0;
-      --text-muted: #666666;
-      --accent: #f5a623;
-      --accent-hover: #e09000;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --border: #e0e5eb;
+      --accent: #2fc6f6;
+      --accent-hover: #1ab0e0;
+      --text-primary: #1a1a2e;
+      --text-secondary: #6b7280;
       --success: #22c55e;
       --error: #ef4444;
-      --border: #2a2a2a;
+      --radius: 12px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
     html, body {
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-primary);
+      background: var(--bg);
       color: var(--text-primary);
       overflow-x: hidden;
     }
@@ -57,14 +53,13 @@
       gap: 8px;
       font-size: 18px;
       font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+      color: var(--text-primary);
     }
 
     .header-title svg {
-      width: 20px;
-      height: 20px;
-      fill: var(--error);
+      width: 22px;
+      height: 22px;
+      fill: var(--accent);
     }
 
     .header-subtitle {
@@ -95,64 +90,45 @@
       transition: all 0.3s ease;
     }
 
-    .status-icon svg {
-      width: 40px;
-      height: 40px;
-    }
+    .status-icon svg { width: 40px; height: 40px; }
 
     .status-icon.idle {
-      background: var(--bg-tertiary);
+      background: var(--card);
       border: 2px dashed var(--border);
+      box-shadow: var(--shadow);
     }
-
-    .status-icon.idle svg {
-      fill: var(--text-muted);
-    }
+    .status-icon.idle svg { fill: var(--text-secondary); }
 
     .status-icon.locating {
-      background: rgba(245, 166, 35, 0.15);
+      background: rgba(47,198,246,0.12);
       border: 2px solid var(--accent);
       animation: pulse 1.5s infinite;
     }
-
-    .status-icon.locating svg {
-      fill: var(--accent);
-      animation: spin 2s linear infinite;
-    }
+    .status-icon.locating svg { fill: var(--accent); animation: spin 2s linear infinite; }
 
     .status-icon.sending {
-      background: rgba(245, 166, 35, 0.15);
+      background: rgba(47,198,246,0.12);
       border: 2px solid var(--accent);
       animation: pulse 1s infinite;
     }
-
-    .status-icon.sending svg {
-      fill: var(--accent);
-    }
+    .status-icon.sending svg { fill: var(--accent); }
 
     .status-icon.success {
-      background: rgba(34, 197, 94, 0.15);
+      background: rgba(34,197,94,0.12);
       border: 2px solid var(--success);
     }
-
-    .status-icon.success svg {
-      fill: var(--success);
-    }
+    .status-icon.success svg { fill: var(--success); }
 
     .status-icon.error {
-      background: rgba(239, 68, 68, 0.15);
+      background: rgba(239,68,68,0.12);
       border: 2px solid var(--error);
     }
-
-    .status-icon.error svg {
-      fill: var(--error);
-    }
+    .status-icon.error svg { fill: var(--error); }
 
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.05); opacity: 0.8; }
     }
-
     @keyframes spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
@@ -160,7 +136,7 @@
 
     .status-text {
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 600;
       text-align: center;
       color: var(--text-primary);
     }
@@ -174,28 +150,22 @@
 
     .coords-display {
       margin-top: 16px;
-      padding: 12px 20px;
-      background: var(--bg-secondary);
+      padding: 10px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 8px;
       font-family: 'SF Mono', Monaco, monospace;
       font-size: 12px;
       color: var(--text-secondary);
       display: none;
+      box-shadow: var(--shadow);
     }
-
-    .coords-display.visible {
-      display: block;
-    }
+    .coords-display.visible { display: block; }
 
     /* Bottom Controls */
     .bottom-controls {
       padding: 16px 0 32px;
       padding-bottom: max(32px, env(safe-area-inset-bottom));
-    }
-
-    /* Chat Selector */
-    .chat-selector {
-      margin-bottom: 20px;
     }
 
     .section-label {
@@ -204,87 +174,20 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--text-secondary);
-      margin-bottom: 10px;
-    }
-
-    .chat-chips {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .chat-chip {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px 8px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 12px;
-      line-height: 1.2;
-      text-align: center;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      min-width: 0;
-    }
-
-    .chat-chip:active {
-      transform: scale(0.97);
-    }
-
-    .chat-chip.selected {
-      background: rgba(245, 166, 35, 0.15);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .chat-chip .chip-check {
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-      border-radius: 50%;
-      border: 2px solid var(--text-muted);
-      transition: all 0.2s ease;
-    }
-
-    .chat-chip.selected .chip-check {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .chat-chip.selected .chip-check::after {
-      content: '✓';
-      color: var(--bg-primary);
-      font-size: 10px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
+      margin-bottom: 8px;
     }
 
     /* Technician Selector */
-    .technician-selector {
-      margin-bottom: 16px;
-    }
+    .technician-selector { margin-bottom: 12px; }
 
-    .select-wrapper {
-      position: relative;
-    }
-
+    .select-wrapper { position: relative; }
     .select-wrapper::after {
       content: '';
       position: absolute;
       right: 16px;
       top: 50%;
       transform: translateY(-50%);
-      width: 0;
-      height: 0;
+      width: 0; height: 0;
       border-left: 6px solid transparent;
       border-right: 6px solid transparent;
       border-top: 6px solid var(--text-secondary);
@@ -293,111 +196,249 @@
 
     select {
       width: 100%;
-      padding: 16px;
-      padding-right: 40px;
-      background: var(--bg-secondary);
+      padding: 14px 40px 14px 16px;
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: var(--radius);
       font-size: 15px;
       color: var(--text-primary);
       appearance: none;
       cursor: pointer;
-      transition: border-color 0.2s ease;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s;
     }
+    select:focus { outline: none; border-color: var(--accent); }
 
-    select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
-    select option {
-      background: var(--bg-secondary);
+    /* Btn escolher chat */
+    .btn-chat-picker {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
       color: var(--text-primary);
-      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
-
-    select optgroup {
+    .btn-chat-picker:active { background: #f0f4f8; }
+    .btn-chat-picker .badge {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 20px;
+      font-size: 12px;
       font-weight: 600;
-      color: var(--accent);
+      padding: 2px 8px;
+      display: none;
     }
+    .btn-chat-picker .badge.visible { display: inline-block; }
 
     /* Main Button */
     .main-button {
       width: 100%;
-      padding: 22px;
+      padding: 20px;
       background: var(--accent);
       border: none;
       border-radius: 16px;
       font-size: 16px;
       font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--bg-primary);
+      color: #fff;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 14px rgba(47,198,246,0.35);
     }
-
-    .main-button:active {
-      transform: scale(0.98);
-      background: var(--accent-hover);
-    }
-
-    .main-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .main-button.loading {
-      position: relative;
-      color: transparent;
-    }
-
+    .main-button:active { transform: scale(0.98); background: var(--accent-hover); }
+    .main-button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .main-button.loading { position: relative; color: transparent; }
     .main-button.loading::after {
       content: '';
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 24px;
-      height: 24px;
+      top: 50%; left: 50%;
+      width: 24px; height: 24px;
       margin: -12px 0 0 -12px;
-      border: 3px solid var(--bg-primary);
+      border: 3px solid #fff;
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
 
-    /* Helper Text */
     .helper-text {
       text-align: center;
       font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 16px;
+      color: var(--text-secondary);
+      margin-top: 14px;
     }
 
-    /* Footer */
     .footer {
       text-align: center;
       padding: 16px 0;
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       border-top: 1px solid var(--border);
     }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--card);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 480px;
+      max-height: 75vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+      overflow: hidden;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+    .modal-close {
+      width: 32px; height: 32px;
+      border: none; background: var(--bg);
+      border-radius: 50%; cursor: pointer;
+      font-size: 18px; color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .modal-search {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-search input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg);
+      outline: none;
+    }
+    .modal-search input:focus { border-color: var(--accent); }
+
+    .modal-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid var(--border);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .modal-item:last-child { border-bottom: none; }
+    .modal-item:active { background: var(--bg); }
+
+    .modal-item .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modal-item .item-name {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .modal-item .item-check {
+      width: 22px; height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .modal-item.selected .item-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .modal-item.selected .item-check::after {
+      content: '✓';
+      color: #fff;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .modal-loading {
+      padding: 32px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+    }
+    .modal-confirm {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+    }
+    .modal-confirm:active { background: var(--accent-hover); }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Header -->
     <header class="header">
       <div class="header-title">
         <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
         Enviar Localização
       </div>
-      <div class="header-subtitle">DS Tech - Técnicos de Campo</div>
+      <div class="header-subtitle">DS Tech — Técnicos de Campo</div>
     </header>
 
-    <!-- Status Area -->
     <div class="status-area">
       <div class="status-icon idle" id="statusIcon">
         <svg id="iconIdle" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
@@ -411,33 +452,12 @@
       <div class="coords-display" id="coordsDisplay"></div>
     </div>
 
-    <!-- Bottom Controls -->
     <div class="bottom-controls">
-      <!-- Chat Selector -->
-      <div class="chat-selector">
-        <div class="section-label">Enviar para</div>
-        <div class="chat-chips" id="chatChips">
-          <div class="chat-chip selected" data-id="default">
-            <span class="chip-check"></span>
-            DSTech | Infraestrutura
-          </div>
-          <div class="chat-chip" data-id="supervisores">
-            <span class="chip-check"></span>
-            Supervisor
-          </div>
-          <div class="chat-chip" data-id="noc">
-            <span class="chip-check"></span>
-            NOC
-          </div>
-        </div>
-      </div>
-
-      <!-- Technician Selector -->
       <div class="technician-selector">
         <div class="section-label">Selecione o técnico</div>
         <div class="select-wrapper">
           <select id="technicianSelect">
-            <option value="">-- Escolha seu nome --</option>
+            <option value="">— Escolha seu nome —</option>
             <option value="Anilson">Anilson</option>
             <option value="Anthony">Anthony</option>
             <option value="Bruno">Bruno</option>
@@ -463,7 +483,11 @@
         </div>
       </div>
 
-      <!-- Main Button -->
+      <button class="btn-chat-picker" id="btnEscolherChat">
+        <span>📤 Escolher destino adicional</span>
+        <span class="badge" id="badgeChats"></span>
+      </button>
+
       <button class="main-button" id="mainButton" disabled>
         Capturar e Enviar GPS
       </button>
@@ -471,219 +495,210 @@
       <div class="helper-text" id="helperText">Selecione seu nome para continuar</div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      Desenvolvido para uso em campo
-    </footer>
+    <footer class="footer">Desenvolvido para uso em campo</footer>
+  </div>
+
+  <!-- Modal de seleção de chats -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Destinos adicionais</span>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-search">
+        <input type="search" id="searchChat" placeholder="Buscar conversa..." autocomplete="off">
+      </div>
+      <div class="modal-list" id="modalList">
+        <div class="modal-loading">Carregando conversas…</div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-confirm" id="modalConfirm">Confirmar</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // ===============================
-    // CONFIGURAÇÃO DOS CHATS
-    // ===============================
-    const CHAT_IDS = {
-      default: 'chat6401',
-      supervisores: 'chat857',
-      noc: 'chat6401'
-    }
+    const WEBHOOK = 'https://dstech.bitrix24.com.br/rest/249/ekxs4uynroohw0ry'
+    const DEFAULT_CHAT = 'chat6401'
 
-    // ===============================
-    // ELEMENTOS DO DOM
-    // ===============================
-    const statusIcon = document.getElementById('statusIcon');
-    const statusText = document.getElementById('statusText');
-    const statusSubtext = document.getElementById('statusSubtext');
-    const coordsDisplay = document.getElementById('coordsDisplay');
-    const mainButton = document.getElementById('mainButton');
-    const technicianSelect = document.getElementById('technicianSelect');
-    const helperText = document.getElementById('helperText');
-    const chatChips = document.querySelectorAll('.chat-chip');
+    const statusIcon   = document.getElementById('statusIcon')
+    const statusText   = document.getElementById('statusText')
+    const statusSubtext = document.getElementById('statusSubtext')
+    const coordsDisplay = document.getElementById('coordsDisplay')
+    const mainButton   = document.getElementById('mainButton')
+    const technicianSelect = document.getElementById('technicianSelect')
+    const helperText   = document.getElementById('helperText')
+    const btnEscolherChat = document.getElementById('btnEscolherChat')
+    const badgeChats   = document.getElementById('badgeChats')
+    const modalOverlay = document.getElementById('modalOverlay')
+    const modalClose   = document.getElementById('modalClose')
+    const modalList    = document.getElementById('modalList')
+    const modalConfirm = document.getElementById('modalConfirm')
+    const searchChat   = document.getElementById('searchChat')
 
-    // ===============================
-    // ESTADO
-    // ===============================
-    let selectedChats = ['default']; // Grupo Principal sempre selecionado
+    let extraChats = []       // [{id, name}] selecionados no modal
+    let allChats   = []       // lista completa carregada da API
+    let pendingChats = []     // seleção temporária dentro do modal
 
-    // ===============================
-    // FUNÇÕES DE ESTADO VISUAL
-    // ===============================
+    // ── Status visual ──────────────────────────────────────────
     function setStatus(state, text, subtext) {
-      // Reset all icons
-      document.querySelectorAll('#statusIcon svg').forEach(svg => svg.style.display = 'none');
-      
-      // Remove all state classes
-      statusIcon.className = 'status-icon';
-      
-      switch(state) {
-        case 'idle':
-          statusIcon.classList.add('idle');
-          document.getElementById('iconIdle').style.display = 'block';
-          break;
-        case 'locating':
-          statusIcon.classList.add('locating');
-          document.getElementById('iconLocating').style.display = 'block';
-          break;
-        case 'sending':
-          statusIcon.classList.add('sending');
-          document.getElementById('iconSending').style.display = 'block';
-          break;
-        case 'success':
-          statusIcon.classList.add('success');
-          document.getElementById('iconSuccess').style.display = 'block';
-          break;
-        case 'error':
-          statusIcon.classList.add('error');
-          document.getElementById('iconError').style.display = 'block';
-          break;
-      }
-      
-      statusText.textContent = text;
-      statusSubtext.textContent = subtext;
+      document.querySelectorAll('#statusIcon svg').forEach(s => s.style.display = 'none')
+      statusIcon.className = 'status-icon ' + state
+      document.getElementById('icon' + state.charAt(0).toUpperCase() + state.slice(1)).style.display = 'block'
+      statusText.textContent = text
+      statusSubtext.textContent = subtext
     }
 
     function showCoords(lat, lng, accuracy) {
-      coordsDisplay.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)} (±${Math.round(accuracy)}m)`;
-      coordsDisplay.classList.add('visible');
+      coordsDisplay.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)} (±${Math.round(accuracy)}m)`
+      coordsDisplay.classList.add('visible')
     }
 
-    function hideCoords() {
-      coordsDisplay.classList.remove('visible');
+    function hideCoords() { coordsDisplay.classList.remove('visible') }
+
+    // ── Técnico ─────────────────────────────────────────────────
+    technicianSelect.addEventListener('change', function () {
+      mainButton.disabled = !this.value
+      helperText.textContent = this.value
+        ? 'Toque no botão para enviar sua localização'
+        : 'Selecione seu nome para continuar'
+    })
+
+    // ── Modal de chats ──────────────────────────────────────────
+    function renderList(filter = '') {
+      const term = filter.toLowerCase()
+      const items = allChats.filter(c => c.name.toLowerCase().includes(term))
+
+      if (!items.length) {
+        modalList.innerHTML = '<div class="modal-loading">Nenhuma conversa encontrada</div>'
+        return
+      }
+
+      modalList.innerHTML = items.map(c => {
+        const sel = pendingChats.some(p => p.id === c.id)
+        return `
+          <div class="modal-item ${sel ? 'selected' : ''}" data-id="${c.id}" data-name="${c.name}">
+            <div class="avatar">${c.name.charAt(0).toUpperCase()}</div>
+            <span class="item-name">${c.name}</span>
+            <div class="item-check"></div>
+          </div>`
+      }).join('')
+
+      modalList.querySelectorAll('.modal-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.dataset.id
+          const name = el.dataset.name
+          const idx = pendingChats.findIndex(p => p.id === id)
+          if (idx >= 0) {
+            pendingChats.splice(idx, 1)
+            el.classList.remove('selected')
+          } else {
+            pendingChats.push({ id, name })
+            el.classList.add('selected')
+          }
+        })
+      })
     }
 
-    // ===============================
-    // SELETOR DE TÉCNICO
-    // ===============================
-    technicianSelect.addEventListener('change', function() {
-      if (this.value) {
-        mainButton.disabled = false;
-        helperText.textContent = 'Toque no botão para enviar sua localização';
+    async function loadChats() {
+      modalList.innerHTML = '<div class="modal-loading">Carregando conversas…</div>'
+      try {
+        const res = await fetch(`${WEBHOOK}/im.recent.list.json`)
+        const data = await res.json()
+        const items = data.result?.items || []
+        allChats = items
+          .filter(i => i.title)
+          .map(i => ({ id: i.chat_id ? `chat${i.chat_id}` : `dialog${i.id}`, name: i.title }))
+        renderList(searchChat.value)
+      } catch {
+        modalList.innerHTML = '<div class="modal-loading">Erro ao carregar conversas</div>'
+      }
+    }
+
+    btnEscolherChat.addEventListener('click', () => {
+      pendingChats = [...extraChats]
+      modalOverlay.classList.add('open')
+      if (!allChats.length) loadChats()
+      else renderList(searchChat.value)
+    })
+
+    searchChat.addEventListener('input', () => renderList(searchChat.value))
+
+    function closeModal() { modalOverlay.classList.remove('open') }
+
+    modalClose.addEventListener('click', closeModal)
+    modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal() })
+
+    modalConfirm.addEventListener('click', () => {
+      extraChats = [...pendingChats]
+      closeModal()
+      if (extraChats.length) {
+        badgeChats.textContent = `+${extraChats.length}`
+        badgeChats.classList.add('visible')
       } else {
-        mainButton.disabled = true;
-        helperText.textContent = 'Selecione seu nome para continuar';
+        badgeChats.classList.remove('visible')
       }
-    });
+    })
 
-    // ===============================
-    // SELETOR DE CHATS
-    // ===============================
-    chatChips.forEach(chip => {
-      chip.addEventListener('click', function() {
-        const chatId = this.dataset.id;
-        
-        if (this.classList.contains('selected')) {
-          this.classList.remove('selected');
-          selectedChats = selectedChats.filter(id => id !== chatId);
-        } else {
-          this.classList.add('selected');
-          selectedChats.push(chatId);
-        }
-      });
-    });
+    // ── Envio de GPS ─────────────────────────────────────────────
+    mainButton.addEventListener('click', async function () {
+      const technician = technicianSelect.value
+      if (!technician) { setStatus('error', 'Erro', 'Selecione um técnico primeiro'); return }
 
-    // ===============================
-    // CAPTURA E ENVIO DE GPS
-    // ===============================
-    mainButton.addEventListener('click', async function() {
-      const technician = technicianSelect.value;
-      
-      if (!technician) {
-        setStatus('error', 'Erro', 'Selecione um técnico primeiro');
-        return;
-      }
-
-      // Desabilita controles
-      mainButton.disabled = true;
-      mainButton.classList.add('loading');
-      technicianSelect.disabled = true;
-      hideCoords();
-
-      // Estado: Obtendo GPS
-      setStatus('locating', 'Obtendo GPS...', 'Aguarde enquanto capturamos sua localização');
+      mainButton.disabled = true
+      mainButton.classList.add('loading')
+      technicianSelect.disabled = true
+      hideCoords()
+      setStatus('locating', 'Obtendo GPS...', 'Aguarde enquanto capturamos sua localização')
 
       try {
-        // Obtém localização
-        const position = await new Promise((resolve, reject) => {
+        const position = await new Promise((resolve, reject) =>
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 30000,
-            maximumAge: 0
-          });
-        });
+            enableHighAccuracy: true, timeout: 30000, maximumAge: 0
+          })
+        )
 
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
+        const { latitude: lat, longitude: lng, accuracy } = position.coords
+        showCoords(lat, lng, accuracy)
+        setStatus('sending', 'Enviando...', 'Transmitindo localização para o servidor')
 
-        showCoords(lat, lng, accuracy);
+        const dialogIds = [DEFAULT_CHAT, ...extraChats.map(c => c.id)]
 
-        // Estado: Enviando
-        setStatus('sending', 'Enviando...', 'Transmitindo localização para o servidor');
-
-        // Monta array de IDs dos chats selecionados
-        const dialogIds = selectedChats.map(chatKey => CHAT_IDS[chatKey]);
-
-        // Envia para a API
         const response = await fetch('/api/send-location', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            technician,
-            lat,
-            lng,
-            accuracy,
-            dialogIds
-          })
-        });
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ technician, lat, lng, accuracy, dialogIds })
+        })
 
-        if (!response.ok) {
-          throw new Error('Erro ao enviar localização');
-        }
+        if (!response.ok) throw new Error('Erro ao enviar localização')
 
-        // Estado: Sucesso
-        setStatus('success', 'Enviado!', 'Localização registrada com sucesso');
-        helperText.textContent = 'Localização enviada com sucesso';
+        setStatus('success', 'Enviado!', 'Localização registrada com sucesso')
+        helperText.textContent = 'Localização enviada com sucesso'
 
-        // Reset após 5 segundos
         setTimeout(() => {
-          setStatus('idle', 'Aguardando', 'Selecione seu nome e toque no botão');
-          hideCoords();
-          mainButton.disabled = false;
-          mainButton.classList.remove('loading');
-          technicianSelect.disabled = false;
-          helperText.textContent = 'Toque no botão para enviar sua localização';
-        }, 5000);
+          setStatus('idle', 'Aguardando', 'Selecione seu nome e toque no botão')
+          hideCoords()
+          mainButton.disabled = false
+          mainButton.classList.remove('loading')
+          technicianSelect.disabled = false
+          helperText.textContent = 'Toque no botão para enviar sua localização'
+        }, 5000)
 
       } catch (error) {
-        console.error('Erro:', error);
-        
-        let errorMessage = 'Ocorreu um erro inesperado';
-        
-        if (error.code === 1) {
-          errorMessage = 'Permissão de localização negada';
-        } else if (error.code === 2) {
-          errorMessage = 'Não foi possível obter a localização';
-        } else if (error.code === 3) {
-          errorMessage = 'Tempo esgotado ao obter localização';
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
+        const msg = error.code === 1 ? 'Permissão de localização negada'
+                  : error.code === 2 ? 'Não foi possível obter a localização'
+                  : error.code === 3 ? 'Tempo esgotado ao obter localização'
+                  : error.message || 'Ocorreu um erro inesperado'
 
-        setStatus('error', 'Erro', errorMessage);
-        helperText.textContent = 'Tente novamente';
+        setStatus('error', 'Erro', msg)
+        helperText.textContent = 'Tente novamente'
+        mainButton.disabled = false
+        mainButton.classList.remove('loading')
+        technicianSelect.disabled = false
 
-        // Reabilita controles
-        mainButton.disabled = false;
-        mainButton.classList.remove('loading');
-        technicianSelect.disabled = false;
-
-        // Reset após 5 segundos
-        setTimeout(() => {
-          setStatus('idle', 'Aguardando', 'Selecione seu nome e toque no botão');
-        }, 5000);
+        setTimeout(() => setStatus('idle', 'Aguardando', 'Selecione seu nome e toque no botão'), 5000)
       }
-    });
+    })
   </script>
 </body>
 </html>
