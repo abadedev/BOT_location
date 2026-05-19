@@ -3,23 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#f5f7fa">
+  <meta name="theme-color" content="#1e2535">
   <title>Enviar Localização - DS Tech</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --border: #e0e5eb;
+      --bg: #1e2535;
+      --card: #273044;
+      --border: #2e3d5a;
+      --chip-bg: #2e3d5a;
+      --chip-border: #3a4d6e;
+      --chip-sel-bg: #1a4a7a;
+      --chip-sel-border: #2fc6f6;
       --accent: #2fc6f6;
       --accent-hover: #1ab0e0;
-      --text-primary: #1a1a2e;
-      --text-secondary: #6b7280;
+      --text-primary: #f0f4ff;
+      --text-secondary: #8b9cc8;
       --success: #22c55e;
       --error: #ef4444;
       --radius: 12px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow: 0 2px 12px rgba(0,0,0,0.3);
     }
 
     html, body {
@@ -91,19 +95,19 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 32px 16px;
-      min-height: 180px;
+      padding: 28px 16px;
+      min-height: 160px;
     }
 
     .status-icon {
-      width: 80px; height: 80px;
+      width: 72px; height: 72px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       transition: all 0.3s ease;
     }
 
-    .status-icon svg { width: 40px; height: 40px; }
+    .status-icon svg { width: 36px; height: 36px; }
 
     .status-icon.idle {
       background: var(--card);
@@ -162,8 +166,8 @@
     }
 
     .coords-display {
-      margin-top: 16px;
-      padding: 10px 16px;
+      margin-top: 12px;
+      padding: 8px 14px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -190,73 +194,104 @@
       margin-bottom: 10px;
     }
 
-    .chat-chips {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    /* Destinos verticais */
+    .destinos-lista {
+      display: flex;
+      flex-direction: column;
       gap: 8px;
       margin-bottom: 16px;
     }
 
-    .chat-chip {
+    .destino-chip {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 12px 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 13px;
-      color: var(--text-secondary);
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: all 0.2s ease;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
-      box-shadow: var(--shadow);
+      transition: all 0.18s ease;
     }
-    .chat-chip:active { transform: scale(0.97); }
-    .chat-chip.selected {
-      background: rgba(47,198,246,0.12);
-      border-color: var(--accent);
-      color: var(--accent);
-      font-weight: 600;
+    .destino-chip:active { transform: scale(0.98); }
+
+    .destino-chip.selecionado {
+      background: var(--chip-sel-bg);
+      border-color: var(--chip-sel-border);
     }
-    .chat-chip .chip-badge {
-      background: var(--accent);
+
+    .destino-chip .chip-icon { font-size: 18px; flex-shrink: 0; }
+
+    .destino-chip .chip-nome {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .destino-chip .chip-check {
+      width: 22px; height: 22px;
+      border: 2px solid var(--chip-border);
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
       color: #fff;
+      font-weight: bold;
+      transition: all 0.18s;
+    }
+    .destino-chip.selecionado .chip-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .destino-chip.selecionado .chip-check::after { content: '✓'; }
+
+    /* Chip "Outros chats" */
+    .destino-busca {
+      border-style: dashed;
+      cursor: pointer;
+    }
+    .destino-busca .chip-nome { color: var(--text-secondary); }
+    .destino-busca .chip-check { display: none; }
+
+    .chip-badge {
+      background: var(--accent);
+      color: #1e2535;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 700;
-      padding: 1px 7px;
+      padding: 2px 8px;
       display: none;
     }
-    .chat-chip .chip-badge.visible { display: inline-block; }
+    .chip-badge.visible { display: inline-block; }
 
     /* Main Button */
     .main-button {
       width: 100%;
-      padding: 20px;
+      padding: 18px;
       background: var(--accent);
       border: none;
       border-radius: 16px;
       font-size: 16px;
       font-weight: 700;
-      color: #fff;
+      color: #1e2535;
       cursor: pointer;
       transition: all 0.2s;
       -webkit-tap-highlight-color: transparent;
-      box-shadow: 0 4px 14px rgba(47,198,246,0.35);
+      box-shadow: 0 4px 18px rgba(47,198,246,0.3);
     }
     .main-button:active { transform: scale(0.98); background: var(--accent-hover); }
-    .main-button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .main-button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
     .main-button.loading { position: relative; color: transparent; }
     .main-button.loading::after {
       content: '';
       position: absolute;
       top: 50%; left: 50%;
-      width: 24px; height: 24px;
-      margin: -12px 0 0 -12px;
-      border: 3px solid #fff;
+      width: 22px; height: 22px;
+      margin: -11px 0 0 -11px;
+      border: 3px solid #1e2535;
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
@@ -266,7 +301,7 @@
       text-align: center;
       font-size: 13px;
       color: var(--text-secondary);
-      margin-top: 14px;
+      margin-top: 12px;
     }
 
     .footer {
@@ -281,7 +316,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.6);
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -355,7 +390,7 @@
     .modal-item .avatar {
       width: 38px; height: 38px;
       border-radius: 50%;
-      background: rgba(47,198,246,0.15);
+      background: rgba(47,198,246,0.12);
       color: var(--accent);
       font-size: 18px;
       display: flex; align-items: center; justify-content: center;
@@ -384,7 +419,7 @@
     }
     .modal-item.selected .item-check::after {
       content: '✓';
-      color: #fff;
+      color: #1e2535;
       font-size: 13px;
       font-weight: bold;
     }
@@ -409,7 +444,7 @@
       border-radius: var(--radius);
       font-size: 15px;
       font-weight: 700;
-      color: #fff;
+      color: #1e2535;
       cursor: pointer;
     }
     .modal-confirm:active { background: var(--accent-hover); }
@@ -443,12 +478,30 @@
 
     <div class="bottom-controls">
       <div class="section-label">Enviar para</div>
-      <div class="chat-chips">
-        <div class="chat-chip selected" id="chipDefault" data-id="chat6401">
-          DSTech | Infraestrutura
+      <div class="destinos-lista">
+        <div class="destino-chip selecionado" data-id="chat6401">
+          <span class="chip-icon">🏢</span>
+          <span class="chip-nome">DSTech | Infraestrutura</span>
+          <span class="chip-check"></span>
         </div>
-        <div class="chat-chip" id="chipOutros">
-          <span>📤 Outros chats...</span>
+        <div class="destino-chip" data-id="41">
+          <span class="chip-icon">💼</span>
+          <span class="chip-nome">Coord. Vendas (Charles)</span>
+          <span class="chip-check"></span>
+        </div>
+        <div class="destino-chip" data-id="105">
+          <span class="chip-icon">🔧</span>
+          <span class="chip-nome">Coord. Infraestrutura (Gildevan)</span>
+          <span class="chip-check"></span>
+        </div>
+        <div class="destino-chip" data-id="223">
+          <span class="chip-icon">👷</span>
+          <span class="chip-nome">Coord. Externos (Alexandre)</span>
+          <span class="chip-check"></span>
+        </div>
+        <div class="destino-chip destino-busca" id="btnOutrosChats">
+          <span class="chip-icon">🔍</span>
+          <span class="chip-nome">Outros chats...</span>
           <span class="chip-badge" id="badgeOutros"></span>
         </div>
       </div>
@@ -480,34 +533,43 @@
   </div>
 
   <script>
-    const WEBHOOK = 'https://dstech.bitrix24.com.br/rest/249/ekxs4uynroohw0ry'
-    const DEFAULT_CHAT_ID = 'chat6401'
-
-    const greeting     = document.getElementById('greeting')
+    const greeting        = document.getElementById('greeting')
     const nameInputWrapper = document.getElementById('nameInputWrapper')
-    const nameInput    = document.getElementById('nameInput')
-    const statusIcon   = document.getElementById('statusIcon')
-    const statusText   = document.getElementById('statusText')
-    const statusSubtext = document.getElementById('statusSubtext')
-    const coordsDisplay = document.getElementById('coordsDisplay')
-    const mainButton   = document.getElementById('mainButton')
-    const helperText   = document.getElementById('helperText')
-    const chipDefault  = document.getElementById('chipDefault')
-    const chipOutros   = document.getElementById('chipOutros')
-    const badgeOutros  = document.getElementById('badgeOutros')
-    const modalOverlay = document.getElementById('modalOverlay')
-    const modalClose   = document.getElementById('modalClose')
-    const modalList    = document.getElementById('modalList')
-    const modalConfirm = document.getElementById('modalConfirm')
-    const searchChat   = document.getElementById('searchChat')
+    const nameInput       = document.getElementById('nameInput')
+    const statusIcon      = document.getElementById('statusIcon')
+    const statusText      = document.getElementById('statusText')
+    const statusSubtext   = document.getElementById('statusSubtext')
+    const coordsDisplay   = document.getElementById('coordsDisplay')
+    const mainButton      = document.getElementById('mainButton')
+    const helperText      = document.getElementById('helperText')
+    const badgeOutros     = document.getElementById('badgeOutros')
+    const btnOutrosChats  = document.getElementById('btnOutrosChats')
+    const modalOverlay    = document.getElementById('modalOverlay')
+    const modalClose      = document.getElementById('modalClose')
+    const modalList       = document.getElementById('modalList')
+    const modalConfirm    = document.getElementById('modalConfirm')
+    const searchChat      = document.getElementById('searchChat')
 
     let bitrixUserName = null
-    let extraChats    = []   // [{id, name, isGroup}]
-    let allChats      = []
-    let pendingChats  = []
-    let defaultSelected = true
-    let nextCursor    = null  // paginação de recentes
-    let searchTimer   = null
+    let extraChats     = []   // [{id, name, isGroup}] vindos do modal
+    let allChats       = []
+    let pendingChats   = []
+    let nextCursor     = null
+    let searchTimer    = null
+
+    // ── Chips fixos ────────────────────────────────────────────
+    document.querySelectorAll('.destino-chip:not(.destino-busca)').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('selecionado')
+      })
+    })
+
+    btnOutrosChats.addEventListener('click', openModal)
+
+    function chipsSelecionados() {
+      return Array.from(document.querySelectorAll('.destino-chip:not(.destino-busca).selecionado'))
+        .map(el => el.dataset.id)
+    }
 
     // ── Recebe usuário via postMessage ─────────────────────────
     window.addEventListener('message', e => {
@@ -521,7 +583,6 @@
       }
     })
 
-    // Se em 800ms não recebeu, mostra input manual
     setTimeout(() => {
       if (!bitrixUserName) {
         greeting.textContent = 'Identifique-se para continuar'
@@ -543,14 +604,6 @@
       coordsDisplay.classList.add('visible')
     }
     function hideCoords() { coordsDisplay.classList.remove('visible') }
-
-    // ── Chips ──────────────────────────────────────────────────
-    chipDefault.addEventListener('click', () => {
-      defaultSelected = !defaultSelected
-      chipDefault.classList.toggle('selected', defaultSelected)
-    })
-
-    chipOutros.addEventListener('click', openModal)
 
     // ── Modal de chats ─────────────────────────────────────────
     function itemHTML(c) {
@@ -669,10 +722,8 @@
       if (extraChats.length) {
         badgeOutros.textContent = extraChats.length
         badgeOutros.classList.add('visible')
-        chipOutros.classList.add('selected')
       } else {
         badgeOutros.classList.remove('visible')
-        chipOutros.classList.remove('selected')
       }
     })
 
@@ -687,8 +738,7 @@
         return
       }
 
-      const dialogIds = []
-      if (defaultSelected) dialogIds.push(DEFAULT_CHAT_ID)
+      const dialogIds = [...chipsSelecionados()]
       extraChats.forEach(c => { if (!dialogIds.includes(c.id)) dialogIds.push(c.id) })
 
       if (!dialogIds.length) {
