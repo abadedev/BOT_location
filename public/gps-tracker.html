@@ -423,8 +423,31 @@
         Enviar Localização
       </div>
       <div class="header-greeting" id="greeting">DS Tech — Técnicos de Campo</div>
-      <div class="name-input-wrapper" id="nameInputWrapper">
-        <input type="text" id="nameInput" placeholder="Digite seu nome">
+      <div class="name-input-wrapper visible" id="nameInputWrapper">
+        <select id="nameSelect" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--card);color:var(--text-primary);outline:none;text-align:center;cursor:pointer;">
+          <option value="">— Selecione seu nome —</option>
+          <option>Juscelino</option>
+          <option>Robson Lima</option>
+          <option>Anilson</option>
+          <option>Diego</option>
+          <option>Elvis</option>
+          <option>Ian</option>
+          <option>Jhonata</option>
+          <option>José Antônio</option>
+          <option>Levi</option>
+          <option>Mateus Figueira</option>
+          <option>Matheus</option>
+          <option>Romário</option>
+          <option>Robson Lopes</option>
+          <option>Rogério</option>
+          <option>Mauro</option>
+          <option>Franklin</option>
+          <option>Bruno</option>
+          <option>Anthony</option>
+          <option>Samuel</option>
+          <option>Jonatas Chaves</option>
+          <option>Lucas</option>
+        </select>
       </div>
     </header>
 
@@ -485,7 +508,7 @@
 
     const greeting     = document.getElementById('greeting')
     const nameInputWrapper = document.getElementById('nameInputWrapper')
-    const nameInput    = document.getElementById('nameInput')
+    const nameSelect   = document.getElementById('nameSelect')
     const statusIcon   = document.getElementById('statusIcon')
     const statusText   = document.getElementById('statusText')
     const statusSubtext = document.getElementById('statusSubtext')
@@ -516,13 +539,8 @@
       }
     })
 
-    // Se em 800ms não recebeu, mostra input manual
-    setTimeout(() => {
-      if (!bitrixUserName) {
-        greeting.textContent = 'Identifique-se para continuar'
-        nameInputWrapper.classList.add('visible')
-      }
-    }, 800)
+    // Sempre mostra o seletor de técnico
+    greeting.textContent = 'DS Tech — Técnicos de Campo'
 
     // ── Status visual ──────────────────────────────────────────
     function setStatus(state, text, subtext) {
@@ -588,29 +606,17 @@
     async function loadChats() {
       modalList.innerHTML = '<div class="modal-loading">Carregando conversas…</div>'
       try {
-        const [recentRes, groupsRes] = await Promise.all([
-          fetch(`${WEBHOOK}/im.recent.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({})),
-          fetch(`${WEBHOOK}/im.chat.get.list.json?LIMIT=100`).then(r => r.json()).catch(() => ({}))
-        ])
+        const res = await fetch(`${WEBHOOK}/im.recent.list.json?LIMIT=50`)
+        const data = await res.json()
+        const chats = (data.result?.items || [])
+          .filter(item => item.chat && item.chat.name)
+          .map(item => ({
+            id: 'chat' + item.chat.id,
+            name: item.chat.name,
+            isGroup: true
+          }))
 
-        const map = new Map()
-
-        const recent = recentRes.result?.items || []
-        recent.forEach(i => {
-          if (!i.title) return
-          const isGroup = !!i.chat_id
-          const id = isGroup ? `chat${i.chat_id}` : `dialog${i.id}`
-          map.set(id, { id, name: i.title, isGroup })
-        })
-
-        const groups = groupsRes.result || []
-        groups.forEach(g => {
-          if (!g.title || !g.id) return
-          const id = `chat${g.id}`
-          if (!map.has(id)) map.set(id, { id, name: g.title, isGroup: true })
-        })
-
-        allChats = Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name))
+        allChats = chats.sort((a, b) => a.name.localeCompare(b.name))
         renderList(searchChat.value)
       } catch {
         modalList.innerHTML = '<div class="modal-loading">Erro ao carregar conversas</div>'
@@ -645,7 +651,7 @@
 
     // ── Envio de GPS ────────────────────────────────────────────
     mainButton.addEventListener('click', async function () {
-      const technician = bitrixUserName || (nameInput.value || '').trim()
+      const technician = bitrixUserName || nameSelect.value.trim()
 
       if (!technician) {
         setStatus('error', 'Erro', 'Digite seu nome para continuar')
