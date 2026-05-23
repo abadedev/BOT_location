@@ -48,13 +48,14 @@ BX24.init(function() {
   BX24.callMethod('placement.unbind', {
     PLACEMENT: 'IM_TOOLBAR',
     HANDLER: 'https://bot-location.vercel.app/gps-tracker.html'
-  }, function() {
+  }, function(unbindResult) {
+    console.log('placement.unbind:', JSON.stringify(unbindResult.data()))
     BX24.callMethod('placement.bind', {
       PLACEMENT: 'IM_TOOLBAR',
       HANDLER: 'https://bot-location.vercel.app/gps-tracker.html',
       TITLE: 'Enviar GPS'
-    }, function(result) {
-      console.log('placement.bind IM_TOOLBAR:', JSON.stringify(result.data()))
+    }, function(bindResult) {
+      console.log('placement.bind IM_TOOLBAR:', JSON.stringify(bindResult.data()))
     })
   })
 })
