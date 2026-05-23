@@ -45,12 +45,17 @@ BX24.init(function() {
     setTimeout(sendUser, 2000)
   })
 
-  BX24.callMethod('placement.bind', {
+  BX24.callMethod('placement.unbind', {
     PLACEMENT: 'IM_TOOLBAR',
-    HANDLER: 'https://bot-location.vercel.app/gps-tracker.html',
-    TITLE: 'Enviar GPS'
-  }, function(result) {
-    console.log('placement.bind IM_TOOLBAR:', JSON.stringify(result.data()))
+    HANDLER: 'https://bot-location.vercel.app/gps-tracker.html'
+  }, function() {
+    BX24.callMethod('placement.bind', {
+      PLACEMENT: 'IM_TOOLBAR',
+      HANDLER: 'https://bot-location.vercel.app/gps-tracker.html',
+      TITLE: 'Enviar GPS'
+    }, function(result) {
+      console.log('placement.bind IM_TOOLBAR:', JSON.stringify(result.data()))
+    })
   })
 })
 </script>
