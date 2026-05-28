@@ -538,6 +538,7 @@
     const searchChat      = document.getElementById('searchChat')
 
     let bitrixUserName = null
+    let bitrixUserId   = null
     let extraChats     = []   // [{id, name, isGroup}] vindos do modal
     let allChats       = []
     let pendingChats   = []
@@ -562,6 +563,7 @@
     window.addEventListener('message', e => {
       if (e.data && e.data.type === 'BITRIX_USER' && e.data.name) {
         bitrixUserName = e.data.name
+        bitrixUserId   = e.data.id || null
         greeting.textContent = `Olá, ${bitrixUserName}`
         nameInputWrapper.classList.remove('visible')
         if (e.data.chats && e.data.chats.length > 0) {
@@ -759,7 +761,7 @@
         const response = await fetch('/api/send-location', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ technician, lat, lng, accuracy, dialogIds, timestamp })
+          body: JSON.stringify({ technician, technicianId: bitrixUserId, lat, lng, accuracy, dialogIds, timestamp })
         })
 
         if (!response.ok) throw new Error('Erro ao enviar localização')
