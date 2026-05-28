@@ -769,6 +769,12 @@
         setStatus('success', 'Enviado!', `Localização enviada para ${dialogIds.length} destino(s)`)
         helperText.textContent = 'Localização enviada com sucesso'
 
+        document.querySelectorAll('.destino-chip:not(.destino-busca)').forEach(c => c.classList.remove('selecionado'))
+        extraChats   = []
+        pendingChats = []
+        badgeOutros.classList.remove('visible')
+        badgeOutros.textContent = ''
+
         setTimeout(() => {
           setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização')
           hideCoords()
