@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const WEBHOOK = 'https://dstech.bitrix24.com.br/rest/249/ekxs4uynroohw0ry'
-const DEFAULT_DIALOG_ID = 'chat6401'
+const DEFAULT_DIALOG_ID = 'chat5293'
 
 export async function POST(req: NextRequest) {
   const { technician, lat, lng, accuracy, dialogIds, timestamp } = await req.json()
