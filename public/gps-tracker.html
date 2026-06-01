@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1e2535">
   <title>Enviar Localização - DS Tech</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg: #1e2535;
@@ -23,10 +28,11 @@
       --success: #22c55e;
       --error: #ef4444;
       --radius: 12px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.3);
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
     }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
@@ -60,7 +66,11 @@
       color: var(--text-primary);
     }
 
-    .header-title svg { width: 22px; height: 22px; fill: var(--accent); }
+    .header-title svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--accent);
+    }
 
     .header-greeting {
       font-size: 14px;
@@ -74,7 +84,11 @@
       margin-top: 10px;
       display: none;
     }
-    .name-input-wrapper.visible { display: block; }
+
+    .name-input-wrapper.visible {
+      display: block;
+    }
+
     .name-input-wrapper input {
       width: 100%;
       padding: 10px 14px;
@@ -88,8 +102,14 @@
       text-align: center;
       transition: border-color 0.18s;
     }
-    .name-input-wrapper input::placeholder { color: var(--text-secondary); }
-    .name-input-wrapper input:focus { border-bottom-color: var(--accent); }
+
+    .name-input-wrapper input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .name-input-wrapper input:focus {
+      border-bottom-color: var(--accent);
+    }
 
     /* Status Area */
     .status-area {
@@ -103,55 +123,92 @@
     }
 
     .status-icon {
-      width: 72px; height: 72px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 16px;
       transition: all 0.3s ease;
     }
 
-    .status-icon svg { width: 36px; height: 36px; }
+    .status-icon svg {
+      width: 36px;
+      height: 36px;
+    }
 
     .status-icon.idle {
       background: var(--card);
       border: 2px dashed var(--border);
       box-shadow: var(--shadow);
     }
-    .status-icon.idle svg { fill: var(--text-secondary); }
+
+    .status-icon.idle svg {
+      fill: var(--text-secondary);
+    }
 
     .status-icon.locating {
-      background: rgba(47,198,246,0.12);
+      background: rgba(47, 198, 246, 0.12);
       border: 2px solid var(--accent);
       animation: pulse 1.5s infinite;
     }
-    .status-icon.locating svg { fill: var(--accent); animation: spin 2s linear infinite; }
+
+    .status-icon.locating svg {
+      fill: var(--accent);
+      animation: spin 2s linear infinite;
+    }
 
     .status-icon.sending {
-      background: rgba(47,198,246,0.12);
+      background: rgba(47, 198, 246, 0.12);
       border: 2px solid var(--accent);
       animation: pulse 1s infinite;
     }
-    .status-icon.sending svg { fill: var(--accent); }
+
+    .status-icon.sending svg {
+      fill: var(--accent);
+    }
 
     .status-icon.success {
-      background: rgba(34,197,94,0.12);
+      background: rgba(34, 197, 94, 0.12);
       border: 2px solid var(--success);
     }
-    .status-icon.success svg { fill: var(--success); }
+
+    .status-icon.success svg {
+      fill: var(--success);
+    }
 
     .status-icon.error {
-      background: rgba(239,68,68,0.12);
+      background: rgba(239, 68, 68, 0.12);
       border: 2px solid var(--error);
     }
-    .status-icon.error svg { fill: var(--error); }
+
+    .status-icon.error svg {
+      fill: var(--error);
+    }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.05); opacity: 0.8; }
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
     }
+
     @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .status-text {
@@ -180,7 +237,10 @@
       display: none;
       box-shadow: var(--shadow);
     }
-    .coords-display.visible { display: block; }
+
+    .coords-display.visible {
+      display: block;
+    }
 
     /* Bottom Controls */
     .bottom-controls {
@@ -220,7 +280,10 @@
       -webkit-tap-highlight-color: transparent;
       transition: all 0.18s ease;
     }
-    .destino-chip:active { transform: scale(0.99); }
+
+    .destino-chip:active {
+      transform: scale(0.99);
+    }
 
     .destino-chip.selecionado {
       background: #0f3460;
@@ -235,7 +298,10 @@
       font-weight: 500;
       color: #cbd5e1;
     }
-    .destino-chip.selecionado .chip-nome { color: #f0f9ff; }
+
+    .destino-chip.selecionado .chip-nome {
+      color: #f0f9ff;
+    }
 
     /* Chip "Outros chats" — outline discreto com lupa */
     .destino-busca {
@@ -244,9 +310,15 @@
       border-left: 1px solid #334155;
       cursor: pointer;
     }
-    .destino-busca .chip-nome { color: #64748b; font-weight: 500; }
+
+    .destino-busca .chip-nome {
+      color: #64748b;
+      font-weight: 500;
+    }
+
     .destino-busca .chip-icon-svg {
-      width: 16px; height: 16px;
+      width: 16px;
+      height: 16px;
       stroke: #64748b;
       flex-shrink: 0;
     }
@@ -260,7 +332,10 @@
       padding: 2px 8px;
       display: none;
     }
-    .chip-badge.visible { display: inline-block; }
+
+    .chip-badge.visible {
+      display: inline-block;
+    }
 
     /* Main Button */
     .main-button {
@@ -275,16 +350,33 @@
       cursor: pointer;
       transition: all 0.2s;
       -webkit-tap-highlight-color: transparent;
-      box-shadow: 0 4px 18px rgba(47,198,246,0.3);
+      box-shadow: 0 4px 18px rgba(47, 198, 246, 0.3);
     }
-    .main-button:active { transform: scale(0.98); background: var(--accent-hover); }
-    .main-button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-    .main-button.loading { position: relative; color: transparent; }
+
+    .main-button:active {
+      transform: scale(0.98);
+      background: var(--accent-hover);
+    }
+
+    .main-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .main-button.loading {
+      position: relative;
+      color: transparent;
+    }
+
     .main-button.loading::after {
       content: '';
       position: absolute;
-      top: 50%; left: 50%;
-      width: 22px; height: 22px;
+      top: 50%;
+      left: 50%;
+      width: 22px;
+      height: 22px;
       margin: -11px 0 0 -11px;
       border: 3px solid #1e2535;
       border-top-color: transparent;
@@ -299,11 +391,144 @@
       margin-top: 12px;
     }
 
+    /* Dropdown Infraestrutura */
+    .infra-select-wrapper {
+      margin-bottom: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .infra-select-wrapper .section-label {
+      margin-bottom: 8px;
+    }
+
+    .infra-select-wrapper select {
+      width: 100%;
+      padding: 12px 16px;
+      background: #1e293b;
+      color: var(--text-primary);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b9cc8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      transition: border-color 0.18s;
+    }
+
+    .infra-select-wrapper select:focus {
+      border-color: var(--accent);
+    }
+
+    .infra-select-wrapper select option {
+      background: #1e293b;
+      color: var(--text-primary);
+    }
+
+    .infra-select-wrapper.error select {
+      border-color: var(--error);
+    }
+
+    .infra-select-wrapper .infra-error-msg {
+      display: none;
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 6px;
+    }
+
+    .infra-select-wrapper.error .infra-error-msg {
+      display: block;
+    }
+
+    /* Input CA + Botão sem numeração */
+    .infra-ca-wrapper {
+      margin-bottom: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .infra-ca-wrapper .ca-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .ca-input-group input {
+      flex: 1;
+      padding: 12px 14px;
+      background: #1e293b;
+      color: var(--text-primary);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.18s;
+      min-width: 0;
+    }
+
+    .ca-input-group input:focus {
+      border-color: var(--accent);
+    }
+
+    .ca-input-group input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .ca-input-group button.btn-no-ca {
+      padding: 12px 14px;
+      background: var(--bg);
+      color: var(--text-secondary);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .ca-input-group button.btn-no-ca.active {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error);
+      border-color: var(--error);
+    }
+
+    .infra-ca-wrapper .ca-error-msg {
+      display: none;
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 6px;
+    }
+
+    .infra-ca-wrapper.error .ca-error-msg {
+      display: block;
+    }
+
+    .infra-ca-wrapper.error input {
+      border-color: var(--error);
+    }
+
     .footer {
       text-align: center;
       padding: 16px 0;
       font-size: 11px;
-      color: var(--text-secondary);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.65);
       border-top: 1px solid var(--border);
     }
 
@@ -311,7 +536,7 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.6);
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -320,7 +545,11 @@
       pointer-events: none;
       transition: opacity 0.2s;
     }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
 
     .modal {
       background: var(--card);
@@ -334,7 +563,10 @@
       transition: transform 0.25s ease;
       overflow: hidden;
     }
-    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
 
     .modal-header {
       padding: 16px 20px 12px;
@@ -343,19 +575,32 @@
       align-items: center;
       justify-content: space-between;
     }
-    .modal-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
     .modal-close {
-      width: 32px; height: 32px;
-      border: none; background: var(--bg);
-      border-radius: 50%; cursor: pointer;
-      font-size: 18px; color: var(--text-secondary);
-      display: flex; align-items: center; justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--bg);
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .modal-search {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
     }
+
     .modal-search input {
       width: 100%;
       padding: 10px 14px;
@@ -366,9 +611,15 @@
       background: var(--bg);
       outline: none;
     }
-    .modal-search input:focus { border-color: var(--accent); }
 
-    .modal-list { overflow-y: auto; flex: 1; }
+    .modal-search input:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-list {
+      overflow-y: auto;
+      flex: 1;
+    }
 
     .modal-item {
       display: flex;
@@ -379,16 +630,25 @@
       border-bottom: 1px solid var(--border);
       -webkit-tap-highlight-color: transparent;
     }
-    .modal-item:last-child { border-bottom: none; }
-    .modal-item:active { background: var(--bg); }
+
+    .modal-item:last-child {
+      border-bottom: none;
+    }
+
+    .modal-item:active {
+      background: var(--bg);
+    }
 
     .modal-item .avatar {
-      width: 38px; height: 38px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      background: rgba(47,198,246,0.12);
+      background: rgba(47, 198, 246, 0.12);
       color: var(--accent);
       font-size: 18px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
 
@@ -402,16 +662,21 @@
     }
 
     .modal-item .item-check {
-      width: 22px; height: 22px;
+      width: 22px;
+      height: 22px;
       border: 2px solid var(--border);
       border-radius: 6px;
       flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .modal-item.selected .item-check {
       background: var(--accent);
       border-color: var(--accent);
     }
+
     .modal-item.selected .item-check::after {
       content: '✓';
       color: #1e2535;
@@ -431,6 +696,7 @@
       border-top: 1px solid var(--border);
       padding-bottom: max(14px, env(safe-area-inset-bottom));
     }
+
     .modal-confirm {
       width: 100%;
       padding: 14px;
@@ -442,14 +708,21 @@
       color: #1e2535;
       cursor: pointer;
     }
-    .modal-confirm:active { background: var(--accent-hover); }
+
+    .modal-confirm:active {
+      background: var(--accent-hover);
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <header class="header">
       <div class="header-title">
-        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+        </svg>
         Enviar Localização
       </div>
       <div class="header-greeting" id="greeting">DS Tech — Técnicos de Campo</div>
@@ -460,11 +733,23 @@
 
     <div class="status-area">
       <div class="status-icon idle" id="statusIcon">
-        <svg id="iconIdle" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-        <svg id="iconLocating" style="display:none" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-        <svg id="iconSending" style="display:none" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        <svg id="iconSuccess" style="display:none" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        <svg id="iconError" style="display:none" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <svg id="iconIdle" viewBox="0 0 24 24">
+          <path
+            d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+        </svg>
+        <svg id="iconLocating" style="display:none" viewBox="0 0 24 24">
+          <path
+            d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+        </svg>
+        <svg id="iconSending" style="display:none" viewBox="0 0 24 24">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+        </svg>
+        <svg id="iconSuccess" style="display:none" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+        </svg>
+        <svg id="iconError" style="display:none" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+        </svg>
       </div>
       <div class="status-text" id="statusText">Aguardando</div>
       <div class="status-subtext" id="statusSubtext">Toque no botão para enviar sua localização</div>
@@ -474,7 +759,7 @@
     <div class="bottom-controls">
       <div class="section-label">Enviar para</div>
       <div class="destinos-lista">
-        <div class="destino-chip selecionado" data-id="chat6401">
+        <div class="destino-chip selecionado" data-id="chat5293">
           <span class="chip-nome">DSTech | Infraestrutura</span>
         </div>
         <div class="destino-chip" data-id="41">
@@ -487,17 +772,51 @@
           <span class="chip-nome">Coord. Externos (Alexandre)</span>
         </div>
         <div class="destino-chip destino-busca" id="btnOutrosChats">
-          <svg class="chip-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <svg class="chip-icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
           <span class="chip-nome">Outros chats...</span>
           <span class="chip-badge" id="badgeOutros"></span>
         </div>
+      </div>
+
+      <div class="infra-select-wrapper" id="infraSelectWrapper" style="display:none">
+        <div class="section-label">Oque deseja? </div>
+        <select id="infraSelect">
+          <option value="" disabled selected>Selecione o motivo...</option>
+          <option value="Verificar vaga">Verificar vaga</option>
+          <option value="CA sem sinal">CA sem sinal</option>
+          <option value="CA com sinal fora dos padrões">CA com sinal fora dos padrões</option>
+          <option value="CA pendurada">CA pendurada</option>
+          <option value="Splittar 1/16">Splittar 1/16</option>
+          <option value="CA com formigas">CA com formigas</option>
+          <option value="CA faltando acopladores">CA faltando acopladores</option>
+          <option value="Outro">Outro</option>
+        </select>
+        <div class="infra-other-wrapper" id="infraOtherWrapper" style="display:none; margin-top: 8px;">
+          <div class="ca-input-group">
+            <input type="text" id="infraOtherInput" placeholder="Digite o motivo...">
+          </div>
+        </div>
+        <div class="infra-error-msg">Selecione um motivo para continuar</div>
+      </div>
+
+      <div class="infra-ca-wrapper" id="infraCaWrapper" style="display:none">
+        <div class="section-label">Número da CA</div>
+        <div class="ca-input-group">
+          <input type="text" id="caNumber" placeholder="Digite a numeração (ex: 01.1.1)">
+          <button type="button" id="btnNoCa" class="btn-no-ca">CA sem numeração</button>
+        </div>
+        <div class="ca-error-msg">Informe o número ou marque "Sem numeração"</div>
       </div>
 
       <button class="main-button" id="mainButton">Capturar e Enviar GPS</button>
       <div class="helper-text" id="helperText">Toque no botão para enviar sua localização</div>
     </div>
 
-    <footer class="footer">Desenvolvido para uso em campo</footer>
+    <footer class="footer">Desenvolvido por Rafael S. Abade Junior</footer>
   </div>
 
   <!-- Modal de seleção de chats -->
@@ -520,34 +839,45 @@
   </div>
 
   <script>
-    const greeting        = document.getElementById('greeting')
+    const greeting = document.getElementById('greeting')
     const nameInputWrapper = document.getElementById('nameInputWrapper')
-    const nameInput       = document.getElementById('nameInput')
-    const statusIcon      = document.getElementById('statusIcon')
-    const statusText      = document.getElementById('statusText')
-    const statusSubtext   = document.getElementById('statusSubtext')
-    const coordsDisplay   = document.getElementById('coordsDisplay')
-    const mainButton      = document.getElementById('mainButton')
-    const helperText      = document.getElementById('helperText')
-    const badgeOutros     = document.getElementById('badgeOutros')
-    const btnOutrosChats  = document.getElementById('btnOutrosChats')
-    const modalOverlay    = document.getElementById('modalOverlay')
-    const modalClose      = document.getElementById('modalClose')
-    const modalList       = document.getElementById('modalList')
-    const modalConfirm    = document.getElementById('modalConfirm')
-    const searchChat      = document.getElementById('searchChat')
+    const nameInput = document.getElementById('nameInput')
+    const statusIcon = document.getElementById('statusIcon')
+    const statusText = document.getElementById('statusText')
+    const statusSubtext = document.getElementById('statusSubtext')
+    const coordsDisplay = document.getElementById('coordsDisplay')
+    const mainButton = document.getElementById('mainButton')
+    const helperText = document.getElementById('helperText')
+    const badgeOutros = document.getElementById('badgeOutros')
+    const btnOutrosChats = document.getElementById('btnOutrosChats')
+    const modalOverlay = document.getElementById('modalOverlay')
+    const modalClose = document.getElementById('modalClose')
+    const modalList = document.getElementById('modalList')
+    const modalConfirm = document.getElementById('modalConfirm')
+    const searchChat = document.getElementById('searchChat')
+    const infraSelectWrapper = document.getElementById('infraSelectWrapper')
+    const infraSelect = document.getElementById('infraSelect')
+    const infraOtherWrapper = document.getElementById('infraOtherWrapper')
+    const infraOtherInput = document.getElementById('infraOtherInput')
+    const infraCaWrapper = document.getElementById('infraCaWrapper')
+    const caNumber = document.getElementById('caNumber')
+    const btnNoCa = document.getElementById('btnNoCa')
+
+    const INFRA_CHAT_ID = 'chat5293'
 
     let bitrixUserName = null
-    let extraChats     = []   // [{id, name, isGroup}] vindos do modal
-    let allChats       = []
-    let pendingChats   = []
-    let nextCursor     = null
-    let searchTimer    = null
+    let bitrixUserId = null
+    let extraChats = []   // [{id, name, isGroup}] vindos do modal
+    let allChats = []
+    let pendingChats = []
+    let nextCursor = null
+    let searchTimer = null
 
     // ── Chips fixos ────────────────────────────────────────────
     document.querySelectorAll('.destino-chip:not(.destino-busca)').forEach(chip => {
       chip.addEventListener('click', () => {
         chip.classList.toggle('selecionado')
+        atualizarDropdownInfra()
       })
     })
 
@@ -558,10 +888,68 @@
         .map(el => el.dataset.id)
     }
 
+    // ── Dropdown Infraestrutura (condicional) ──────────────────
+    function atualizarDropdownInfra() {
+      const selecionados = chipsSelecionados()
+      const apenasInfra = selecionados.length === 1 && selecionados[0] === INFRA_CHAT_ID && extraChats.length === 0
+      if (apenasInfra) {
+        infraSelectWrapper.style.display = 'block'
+        infraCaWrapper.style.display = 'block'
+        if (infraSelect.value === 'Outro') {
+          infraOtherWrapper.style.display = 'block'
+        }
+      } else {
+        infraSelectWrapper.style.display = 'none'
+        infraSelectWrapper.classList.remove('error')
+        infraSelect.value = ''
+
+        infraOtherWrapper.style.display = 'none'
+        infraOtherInput.value = ''
+
+        infraCaWrapper.style.display = 'none'
+        infraCaWrapper.classList.remove('error')
+        caNumber.value = ''
+        caNumber.disabled = false
+        btnNoCa.classList.remove('active')
+      }
+    }
+
+    infraSelect.addEventListener('change', () => {
+      infraSelectWrapper.classList.remove('error')
+      if (infraSelect.value === 'Outro') {
+        infraOtherWrapper.style.display = 'block'
+        infraOtherInput.focus()
+      } else {
+        infraOtherWrapper.style.display = 'none'
+        infraOtherInput.value = ''
+      }
+    })
+
+    infraOtherInput.addEventListener('input', () => {
+      infraSelectWrapper.classList.remove('error')
+    })
+
+    caNumber.addEventListener('input', () => {
+      infraCaWrapper.classList.remove('error')
+    })
+
+    btnNoCa.addEventListener('click', () => {
+      infraCaWrapper.classList.remove('error')
+      const isSemCa = btnNoCa.classList.toggle('active')
+      if (isSemCa) {
+        caNumber.value = ''
+        caNumber.disabled = true
+      } else {
+        caNumber.disabled = false
+        caNumber.focus()
+      }
+    })
+
     // ── Recebe usuário via postMessage ─────────────────────────
     window.addEventListener('message', e => {
       if (e.data && e.data.type === 'BITRIX_USER' && e.data.name) {
         bitrixUserName = e.data.name
+        bitrixUserId = e.data.id || null
         greeting.textContent = `Olá, ${bitrixUserName}`
         nameInputWrapper.classList.remove('visible')
         if (e.data.chats && e.data.chats.length > 0) {
@@ -594,9 +982,9 @@
 
     // ── Modal de chats ─────────────────────────────────────────
     function itemHTML(c) {
-      const sel  = pendingChats.some(p => p.id === c.id)
+      const sel = pendingChats.some(p => p.id === c.id)
       const icon = c.isGroup ? '👥' : '👤'
-      return `<div class="modal-item ${sel ? 'selected' : ''}" data-id="${c.id}" data-name="${c.name.replace(/"/g,'&quot;')}" data-group="${c.isGroup ? '1' : '0'}">
+      return `<div class="modal-item ${sel ? 'selected' : ''}" data-id="${c.id}" data-name="${c.name.replace(/"/g, '&quot;')}" data-group="${c.isGroup ? '1' : '0'}">
         <div class="avatar">${icon}</div>
         <span class="item-name">${c.name}</span>
         <div class="item-check"></div>
@@ -609,7 +997,7 @@
           const id = el.dataset.id, name = el.dataset.name, isGroup = el.dataset.group === '1'
           const idx = pendingChats.findIndex(p => p.id === id)
           if (idx >= 0) { pendingChats.splice(idx, 1); el.classList.remove('selected') }
-          else           { pendingChats.push({ id, name, isGroup }); el.classList.add('selected') }
+          else { pendingChats.push({ id, name, isGroup }); el.classList.add('selected') }
         })
       })
     }
@@ -643,9 +1031,9 @@
     async function loadChats() {
       modalList.innerHTML = '<div class="modal-loading">Carregando conversas…</div>'
       try {
-        const res  = await fetch('/api/bitrix/chats')
+        const res = await fetch('/api/bitrix/chats')
         const data = await res.json()
-        allChats   = data.items.map(c => ({ id: c.dialogId, name: c.name, isGroup: c.type === 'chat' }))
+        allChats = data.items.map(c => ({ id: c.dialogId, name: c.name, isGroup: c.type === 'chat' }))
         nextCursor = data.nextCursor || null
         renderRecent()
       } catch {
@@ -656,10 +1044,10 @@
     async function loadMore() {
       if (!nextCursor) return
       try {
-        const res  = await fetch(`/api/bitrix/chats?lastMessageDate=${encodeURIComponent(nextCursor)}`)
+        const res = await fetch(`/api/bitrix/chats?lastMessageDate=${encodeURIComponent(nextCursor)}`)
         const data = await res.json()
         const more = data.items.map(c => ({ id: c.dialogId, name: c.name, isGroup: c.type === 'chat' }))
-        allChats   = [...allChats, ...more]
+        allChats = [...allChats, ...more]
         nextCursor = data.nextCursor || null
         renderRecent()
       } catch { /* silencia */ }
@@ -668,7 +1056,7 @@
     async function searchChats(q) {
       modalList.innerHTML = '<div class="modal-loading">Buscando…</div>'
       try {
-        const res  = await fetch(`/api/bitrix/search-chats?q=${encodeURIComponent(q)}&offset=0&limit=20`)
+        const res = await fetch(`/api/bitrix/search-chats?q=${encodeURIComponent(q)}&offset=0&limit=20`)
         const data = await res.json()
         const items = data.items.map(c => ({ id: c.dialogId, name: c.name, isGroup: c.type === 'chat' }))
         renderSearch(items)
@@ -712,6 +1100,7 @@
       } else {
         badgeOutros.classList.remove('visible')
       }
+      atualizarDropdownInfra()
     })
 
     // ── Envio de GPS ────────────────────────────────────────────
@@ -735,17 +1124,93 @@
         return
       }
 
+      // Validação dropdown Infraestrutura
+      const infraVisivel = infraSelectWrapper.style.display !== 'none'
+      let infraMotivoVazado = infraSelect.value
+
+      if (infraVisivel) {
+        if (!infraMotivoVazado) {
+          infraSelectWrapper.classList.add('error')
+          setStatus('error', 'Erro', 'Selecione o motivo da visita')
+          helperText.textContent = 'Motivo da visita é obrigatório'
+          setTimeout(() => setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização'), 3000)
+          return
+        }
+
+        if (infraMotivoVazado === 'Outro') {
+          const v = infraOtherInput.value.trim()
+          if (!v) {
+            infraSelectWrapper.classList.add('error')
+            setStatus('error', 'Erro', 'Digite o motivo da visita')
+            helperText.textContent = 'Se selecionou Outro, digite o motivo'
+            setTimeout(() => setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização'), 3000)
+            return
+          }
+          infraMotivoVazado = v
+        }
+      }
+
+      let valorCa = ''
+      if (infraVisivel) {
+        const isSemCa = btnNoCa.classList.contains('active')
+        valorCa = isSemCa ? 'CA sem numero' : caNumber.value.trim()
+
+        if (!valorCa) {
+          infraCaWrapper.classList.add('error')
+          setStatus('error', 'Erro', 'Informe o CA ou marque sem numeração')
+          helperText.textContent = 'Número da CA é obrigatório'
+          setTimeout(() => setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização'), 3000)
+          return
+        }
+      }
+
       mainButton.disabled = true
       mainButton.classList.add('loading')
       hideCoords()
       setStatus('locating', 'Obtendo GPS...', 'Aguarde enquanto capturamos sua localização')
 
       try {
-        const position = await new Promise((resolve, reject) =>
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true, timeout: 30000, maximumAge: 0
-          })
-        )
+        const position = await new Promise((resolve, reject) => {
+          let bestPosition = null
+          let watchId = null
+          let timeoutId = null
+
+          const finish = (pos) => {
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId)
+            if (timeoutId !== null) clearTimeout(timeoutId)
+            resolve(pos)
+          }
+
+          const fail = (err) => {
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId)
+            if (timeoutId !== null) clearTimeout(timeoutId)
+            if (bestPosition) resolve(bestPosition)
+            else reject(err)
+          }
+
+          watchId = navigator.geolocation.watchPosition(
+            (pos) => {
+              if (!bestPosition || pos.coords.accuracy < bestPosition.coords.accuracy) {
+                bestPosition = pos
+              }
+              // Se tivermos uma precisão menor ou igual a 30m, já manda rápido
+              if (pos.coords.accuracy <= 30) {
+                finish(bestPosition)
+              }
+            },
+            fail,
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+          )
+
+          // Máximo de 10s esperando. Evita que o técnico reclame da demora.
+          timeoutId = setTimeout(() => {
+            if (bestPosition) {
+              finish(bestPosition)
+            } else {
+              fail(new Error('Tempo esgotado ao tentar obter localização'))
+            }
+          }, 10000)
+        })
 
         const { latitude: lat, longitude: lng, accuracy } = position.coords
         showCoords(lat, lng, accuracy)
@@ -756,16 +1221,38 @@
           hour: '2-digit', minute: '2-digit'
         })
 
+        const payload = { technician, technicianId: bitrixUserId, lat, lng, accuracy, dialogIds, timestamp }
+        if (infraVisivel && infraMotivoVazado) {
+          payload.infraMotivo = infraMotivoVazado
+          payload.infraCa = valorCa
+        }
+
         const response = await fetch('/api/send-location', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ technician, lat, lng, accuracy, dialogIds, timestamp })
+          body: JSON.stringify(payload)
         })
 
         if (!response.ok) throw new Error('Erro ao enviar localização')
 
         setStatus('success', 'Enviado!', `Localização enviada para ${dialogIds.length} destino(s)`)
         helperText.textContent = 'Localização enviada com sucesso'
+
+        document.querySelectorAll('.destino-chip:not(.destino-busca)').forEach(c => c.classList.remove('selecionado'))
+        extraChats = []
+        pendingChats = []
+        badgeOutros.classList.remove('visible')
+        badgeOutros.textContent = ''
+        infraSelectWrapper.style.display = 'none'
+        infraSelectWrapper.classList.remove('error')
+        infraSelect.value = ''
+        infraOtherWrapper.style.display = 'none'
+        infraOtherInput.value = ''
+        infraCaWrapper.style.display = 'none'
+        infraCaWrapper.classList.remove('error')
+        caNumber.value = ''
+        caNumber.disabled = false
+        btnNoCa.classList.remove('active')
 
         setTimeout(() => {
           setStatus('idle', 'Aguardando', 'Toque no botão para enviar sua localização')
@@ -777,9 +1264,9 @@
 
       } catch (error) {
         const msg = error.code === 1 ? 'Permissão de localização negada'
-                  : error.code === 2 ? 'Não foi possível obter a localização'
-                  : error.code === 3 ? 'Tempo esgotado ao obter localização'
-                  : error.message || 'Ocorreu um erro inesperado'
+          : error.code === 2 ? 'Não foi possível obter a localização'
+            : error.code === 3 ? 'Tempo esgotado ao obter localização'
+              : error.message || 'Ocorreu um erro inesperado'
 
         setStatus('error', 'Erro', msg)
         helperText.textContent = 'Tente novamente'
@@ -791,4 +1278,5 @@
     })
   </script>
 </body>
+
 </html>
