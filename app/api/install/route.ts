@@ -53,6 +53,23 @@ async function registerMobilePlacement(domain: string, token: string) {
   return data
 }
 
+async function registerToolbarPlacement(domain: string, token: string) {
+  const body = new URLSearchParams({
+    auth: token,
+    PLACEMENT: 'IM_TOOLBAR',
+    HANDLER: 'https://bot-location.vercel.app/gps-tracker.html',
+    TITLE: 'Enviar GPS',
+  })
+  const res = await fetch(`https://${domain}/rest/placement.bind`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  })
+  const data = await res.json()
+  console.log('toolbar placement.bind result:', JSON.stringify(data))
+  return data
+}
+
 export async function POST(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const domain = searchParams.get('DOMAIN') || 'dstech.bitrix24.com.br'
@@ -75,6 +92,7 @@ export async function POST(req: NextRequest) {
         }))
 
         await registerMobilePlacement(domain, tokenData.access_token)
+        await registerToolbarPlacement(domain, tokenData.access_token)
       }
     } catch (e) {
       console.error('Install error:', e)
@@ -106,6 +124,7 @@ export async function GET(req: NextRequest) {
           installed_at: Date.now()
         }))
         await registerMobilePlacement(domain, tokenData.access_token)
+        await registerToolbarPlacement(domain, tokenData.access_token)
       }
     } catch (e) {
       console.error('Install GET error:', e)
