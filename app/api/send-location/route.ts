@@ -8,8 +8,15 @@ export async function POST(req: NextRequest) {
 
   const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`
   const mention = technicianId ? `[USER=${technicianId}]${technician}[/USER]` : technician
-  const motivoLine = infraMotivo && infraCa ? `\n Motivo : ${infraMotivo} - ${infraCa}` : ''
-  const message = `📍 Localização\n👤 Colaborador: ${mention}${motivoLine}\n🕐 ${timestamp}\n📏 Precisão: ±${Math.round(accuracy)}m\n🗺️ ${mapsLink}`
+  let caText = (!infraCa || infraCa === 'CA sem numero') ? 'CA sem numeração' : infraCa
+  if (caText !== 'CA sem numeração' && !caText.toUpperCase().startsWith('CA')) {
+    caText = `CA-${caText}`
+  }
+
+  const motivoText = infraMotivo ? infraMotivo : 'Não informada'
+  const timeText = timestamp ? timestamp.replace(/,\s*/, ' às ') : ''
+
+  const message = `📍 Registro de localização —  ${caText}\n\n👤 Colaborador: ${mention}  \n📌 Descrição: ${motivoText}\n🕙 Data/Hora: ${timeText}  \n🎯 Precisão da localização: ±${Math.round(accuracy)} m  \n\n🔗 Localização no mapa:\n${mapsLink}`
 
   const chats = dialogIds && dialogIds.length > 0 ? dialogIds : [DEFAULT_DIALOG_ID]
 
