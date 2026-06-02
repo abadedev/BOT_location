@@ -759,7 +759,7 @@
     <div class="bottom-controls">
       <div class="section-label">Enviar para</div>
       <div class="destinos-lista">
-        <div class="destino-chip selecionado" data-id="chat5293">
+        <div class="destino-chip" data-id="chat5293">
           <span class="chip-nome">DSTech | Infraestrutura</span>
         </div>
         <div class="destino-chip" data-id="41">
@@ -791,6 +791,7 @@
           <option value="CA com sinal fora dos padrões">CA com sinal fora dos padrões</option>
           <option value="CA pendurada">CA pendurada</option>
           <option value="Splittar 1/16">Splittar 1/16</option>
+          <option value="Uma porta LO">Uma porta LO</option>
           <option value="CA com formigas">CA com formigas</option>
           <option value="CA faltando acopladores">CA faltando acopladores</option>
           <option value="Outro">Outro</option>
@@ -839,6 +840,17 @@
   </div>
 
   <script>
+    let preloadedPosition = null
+    const preloadWatchId = navigator.geolocation?.watchPosition(
+      (pos) => {
+        if (!preloadedPosition || pos.coords.accuracy < preloadedPosition.coords.accuracy) {
+          preloadedPosition = pos
+        }
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 60000, maximumAge: 0 }
+    )
+
     const greeting = document.getElementById('greeting')
     const nameInputWrapper = document.getElementById('nameInputWrapper')
     const nameInput = document.getElementById('nameInput')
@@ -1171,7 +1183,13 @@
 
       try {
         const position = await new Promise((resolve, reject) => {
-          let bestPosition = null
+          // Se já carregamos um GPS bom no fundo, usa direto
+          if (preloadedPosition && preloadedPosition.coords.accuracy <= 30) {
+            resolve(preloadedPosition)
+            return
+          }
+
+          let bestPosition = preloadedPosition
           let watchId = null
           let timeoutId = null
 
