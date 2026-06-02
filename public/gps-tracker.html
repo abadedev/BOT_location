@@ -889,26 +889,8 @@
   </div>
 
   <script>
-    let preloadedPosition = null
-    let preloadWatchId = null
-    
-    // Atraso para evitar crash (fechamento forçado) no WebView do Android pelo Bitrix
-    // Ocorre se o GPS for acionado exatamente no milissegundo de abertura do App.
-    setTimeout(() => {
-      if (navigator.geolocation) {
-        try {
-          preloadWatchId = navigator.geolocation.watchPosition(
-            (pos) => {
-              if (!preloadedPosition || pos.coords.accuracy < preloadedPosition.coords.accuracy) {
-                preloadedPosition = pos
-              }
-            },
-            () => {},
-            { enableHighAccuracy: true, timeout: 60000, maximumAge: 0 }
-          )
-        } catch (e) {}
-      }
-    }, 2500)
+    // Removido pré-carregamento em segundo plano para evitar cache/localização travada
+    // conforme solicitação do usuário. A localização será obtida apenas sob demanda.
 
     const greeting = document.getElementById('greeting')
     const nameInputWrapper = document.getElementById('nameInputWrapper')
@@ -1271,22 +1253,24 @@
 
       try {
         const position = await new Promise((resolve, reject) => {
-          // Se já carregamos um GPS bom no fundo, usa direto
-          if (preloadedPosition && preloadedPosition.coords.accuracy <= 30) {
-            resolve(preloadedPosition)
-            return
-          }
-
-          let bestPosition = preloadedPosition
+          let bestPosition = null
           let watchId = null
-          let timeoutId = null
+          
+          // Timeout de segurança para a busca ativa
+          const timeoutId = setTimeout(() => {
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId)
+            if (bestPosition) resolve(bestPosition)
+            else reject(new Error("Não foi possível obter uma precisão satisfatória a tempo."))
+          }, 35000)
 
           const finish = (pos) => {
+            clearTimeout(timeoutId)
             if (watchId !== null) navigator.geolocation.clearWatch(watchId)
             resolve(pos)
           }
 
           const fail = (err) => {
+            clearTimeout(timeoutId)
             if (watchId !== null) navigator.geolocation.clearWatch(watchId)
             if (bestPosition) resolve(bestPosition)
             else reject(err)
@@ -1298,14 +1282,14 @@
                 bestPosition = pos
               }
               // Atualiza o subtexto informando a precisão atual
-              statusSubtext.textContent = `Aguardando precisão até 30m... (Atual: ${Math.round(pos.coords.accuracy)}m)`
+              statusSubtext.textContent = `Buscando localização atual... (Precisão: ${Math.round(pos.coords.accuracy)}m)`
               
-              if (pos.coords.accuracy <= 30) {
+              if (pos.coords.accuracy <= 25) {
                 finish(bestPosition)
               }
             },
             fail,
-            { enableHighAccuracy: true, maximumAge: 0 } // Sem timeout para não expirar
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
           )
         })
 
