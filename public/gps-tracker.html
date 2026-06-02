@@ -413,35 +413,79 @@
       margin-bottom: 8px;
     }
 
-    .infra-select-wrapper select {
+    .infra-select-wrapper .custom-select {
+      position: relative;
       width: 100%;
+    }
+
+    .infra-select-wrapper .custom-select-trigger {
       padding: 12px 16px;
       background: #1e293b;
-      color: var(--text-primary);
+      color: var(--text-secondary);
       border: 1px solid #334155;
       border-radius: 8px;
       font-size: 14px;
-      font-family: inherit;
-      outline: none;
       cursor: pointer;
-      appearance: none;
-      -webkit-appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b9cc8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 14px center;
       transition: border-color 0.18s;
+      user-select: none;
     }
 
-    .infra-select-wrapper select:focus {
-      border-color: var(--accent);
-    }
-
-    .infra-select-wrapper select option {
-      background: #1e293b;
+    .infra-select-wrapper .custom-select.selected .custom-select-trigger {
       color: var(--text-primary);
     }
 
-    .infra-select-wrapper.error select {
+    .infra-select-wrapper .custom-select.open .custom-select-trigger {
+      border-color: var(--accent);
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .custom-select-options-wrap {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid var(--accent);
+      border-top: none;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      z-index: 50;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .infra-select-wrapper .custom-select.open .custom-select-options-wrap {
+      display: block;
+    }
+
+    .custom-select-option {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+      border-bottom: 1px solid #334155;
+    }
+    
+    .custom-select-option:last-child {
+      border-bottom: none;
+    }
+
+    .custom-select-option:active {
+      background: rgba(47, 198, 246, 0.2);
+    }
+
+    .custom-select-option.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .infra-select-wrapper.error .custom-select-trigger {
       border-color: var(--error);
     }
 
@@ -783,20 +827,24 @@
       </div>
 
       <div class="infra-select-wrapper" id="infraSelectWrapper" style="display:none">
-        <div class="section-label">Oque deseja? </div>
-        <select id="infraSelect">
-          <option value="" disabled selected>Selecione o motivo...</option>
-          <option value="Verificar vaga">Verificar vaga</option>
-          <option value="Numeração da CA">Numeração da CA</option>
-          <option value="CA sem sinal">CA sem sinal</option>
-          <option value="CA com sinal fora dos padrões">CA com sinal fora dos padrões</option>
-          <option value="CA pendurada">CA pendurada</option>
-          <option value="Splittar 1/16">Splittar 1/16</option>
-          <option value="Uma porta LO">Uma porta LO</option>
-          <option value="CA com formigas">CA com formigas</option>
-          <option value="CA faltando acopladores">CA faltando acopladores</option>
-          <option value="Outro">Outro</option>
-        </select>
+        <div class="section-label">Oque deseja?</div>
+        <div class="custom-select" id="infraCustomSelect">
+          <div class="custom-select-trigger" id="infraSelectTrigger">Selecione o motivo...</div>
+          <div class="custom-select-options-wrap" id="infraSelectOptionsWrap">
+            <div class="custom-select-options">
+              <div class="custom-select-option" data-value="Verificar vaga">Verificar vaga</div>
+              <div class="custom-select-option" data-value="CA sem sinal">CA sem sinal</div>
+              <div class="custom-select-option" data-value="CA com sinal fora dos padrões">CA com sinal fora dos padrões</div>
+              <div class="custom-select-option" data-value="CA pendurada">CA pendurada</div>
+              <div class="custom-select-option" data-value="Splittar 1/16">Splittar 1/16</div>
+              <div class="custom-select-option" data-value="Uma porta LO">Uma porta LO</div>
+              <div class="custom-select-option" data-value="CA com formigas">CA com formigas</div>
+              <div class="custom-select-option" data-value="CA faltando acopladores">CA faltando acopladores</div>
+              <div class="custom-select-option" data-value="Outro">Outro</div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="infraSelectValue" value="">
         <div class="infra-other-wrapper" id="infraOtherWrapper" style="display:none; margin-top: 8px;">
           <div class="ca-input-group">
             <input type="text" id="infraOtherInput" placeholder="Digite o motivo...">
@@ -879,7 +927,9 @@
     const modalConfirm = document.getElementById('modalConfirm')
     const searchChat = document.getElementById('searchChat')
     const infraSelectWrapper = document.getElementById('infraSelectWrapper')
-    const infraSelect = document.getElementById('infraSelect')
+    const infraCustomSelect = document.getElementById('infraCustomSelect')
+    const infraSelectTrigger = document.getElementById('infraSelectTrigger')
+    const infraSelectValue = document.getElementById('infraSelectValue')
     const infraOtherWrapper = document.getElementById('infraOtherWrapper')
     const infraOtherInput = document.getElementById('infraOtherInput')
     const infraCaWrapper = document.getElementById('infraCaWrapper')
@@ -912,19 +962,57 @@
     }
 
     // ── Dropdown Infraestrutura (condicional) ──────────────────
+    // Fechar dropdown de motivos ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (infraCustomSelect && !infraCustomSelect.contains(e.target)) {
+        infraCustomSelect.classList.remove('open')
+      }
+    })
+
+    if (infraSelectTrigger) {
+      infraSelectTrigger.addEventListener('click', () => {
+        infraCustomSelect.classList.toggle('open')
+      })
+    }
+
+    document.querySelectorAll('.custom-select-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const val = opt.getAttribute('data-value')
+        infraSelectValue.value = val
+        infraSelectTrigger.textContent = val
+        infraCustomSelect.classList.remove('open')
+        infraCustomSelect.classList.add('selected')
+        infraSelectWrapper.classList.remove('error')
+        
+        document.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'))
+        opt.classList.add('active')
+
+        if (val === 'Outro') {
+          infraOtherWrapper.style.display = 'block'
+          infraOtherInput.focus()
+        } else {
+          infraOtherWrapper.style.display = 'none'
+          infraOtherInput.value = ''
+        }
+      })
+    })
+
     function atualizarDropdownInfra() {
       const selecionados = chipsSelecionados()
       const apenasInfra = selecionados.length === 1 && selecionados[0] === INFRA_CHAT_ID && extraChats.length === 0
       if (apenasInfra) {
         infraSelectWrapper.style.display = 'block'
         infraCaWrapper.style.display = 'block'
-        if (infraSelect.value === 'Outro') {
+        if (infraSelectValue.value === 'Outro') {
           infraOtherWrapper.style.display = 'block'
         }
       } else {
         infraSelectWrapper.style.display = 'none'
         infraSelectWrapper.classList.remove('error')
-        infraSelect.value = ''
+        infraSelectValue.value = ''
+        infraSelectTrigger.textContent = 'Selecione o motivo...'
+        infraCustomSelect.classList.remove('selected')
+        document.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'))
 
         infraOtherWrapper.style.display = 'none'
         infraOtherInput.value = ''
@@ -936,17 +1024,6 @@
         btnNoCa.classList.remove('active')
       }
     }
-
-    infraSelect.addEventListener('change', () => {
-      infraSelectWrapper.classList.remove('error')
-      if (infraSelect.value === 'Outro') {
-        infraOtherWrapper.style.display = 'block'
-        infraOtherInput.focus()
-      } else {
-        infraOtherWrapper.style.display = 'none'
-        infraOtherInput.value = ''
-      }
-    })
 
     infraOtherInput.addEventListener('input', () => {
       infraSelectWrapper.classList.remove('error')
@@ -1149,7 +1226,7 @@
 
       // Validação dropdown Infraestrutura
       const infraVisivel = infraSelectWrapper.style.display !== 'none'
-      let infraMotivoVazado = infraSelect.value
+      let infraMotivoVazado = infraSelectValue.value
 
       if (infraVisivel) {
         if (!infraMotivoVazado) {
@@ -1206,13 +1283,11 @@
 
           const finish = (pos) => {
             if (watchId !== null) navigator.geolocation.clearWatch(watchId)
-            if (timeoutId !== null) clearTimeout(timeoutId)
             resolve(pos)
           }
 
           const fail = (err) => {
             if (watchId !== null) navigator.geolocation.clearWatch(watchId)
-            if (timeoutId !== null) clearTimeout(timeoutId)
             if (bestPosition) resolve(bestPosition)
             else reject(err)
           }
@@ -1222,23 +1297,16 @@
               if (!bestPosition || pos.coords.accuracy < bestPosition.coords.accuracy) {
                 bestPosition = pos
               }
-              // Se tivermos uma precisão menor ou igual a 30m, já manda rápido
+              // Atualiza o subtexto informando a precisão atual
+              statusSubtext.textContent = `Aguardando precisão até 30m... (Atual: ${Math.round(pos.coords.accuracy)}m)`
+              
               if (pos.coords.accuracy <= 30) {
                 finish(bestPosition)
               }
             },
             fail,
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            { enableHighAccuracy: true, maximumAge: 0 } // Sem timeout para não expirar
           )
-
-          // Máximo de 10s esperando. Evita que o técnico reclame da demora.
-          timeoutId = setTimeout(() => {
-            if (bestPosition) {
-              finish(bestPosition)
-            } else {
-              fail(new Error('Tempo esgotado ao tentar obter localização'))
-            }
-          }, 10000)
         })
 
         const { latitude: lat, longitude: lng, accuracy } = position.coords
@@ -1274,7 +1342,10 @@
         badgeOutros.textContent = ''
         infraSelectWrapper.style.display = 'none'
         infraSelectWrapper.classList.remove('error')
-        infraSelect.value = ''
+        infraSelectValue.value = ''
+        infraSelectTrigger.textContent = 'Selecione o motivo...'
+        infraCustomSelect.classList.remove('selected')
+        document.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'))
         infraOtherWrapper.style.display = 'none'
         infraOtherInput.value = ''
         infraCaWrapper.style.display = 'none'
