@@ -787,6 +787,7 @@
         <select id="infraSelect">
           <option value="" disabled selected>Selecione o motivo...</option>
           <option value="Verificar vaga">Verificar vaga</option>
+          <option value="Numeração da CA">Numeração da CA</option>
           <option value="CA sem sinal">CA sem sinal</option>
           <option value="CA com sinal fora dos padrões">CA com sinal fora dos padrões</option>
           <option value="CA pendurada">CA pendurada</option>
@@ -841,15 +842,25 @@
 
   <script>
     let preloadedPosition = null
-    const preloadWatchId = navigator.geolocation?.watchPosition(
-      (pos) => {
-        if (!preloadedPosition || pos.coords.accuracy < preloadedPosition.coords.accuracy) {
-          preloadedPosition = pos
-        }
-      },
-      () => {},
-      { enableHighAccuracy: true, timeout: 60000, maximumAge: 0 }
-    )
+    let preloadWatchId = null
+    
+    // Atraso para evitar crash (fechamento forçado) no WebView do Android pelo Bitrix
+    // Ocorre se o GPS for acionado exatamente no milissegundo de abertura do App.
+    setTimeout(() => {
+      if (navigator.geolocation) {
+        try {
+          preloadWatchId = navigator.geolocation.watchPosition(
+            (pos) => {
+              if (!preloadedPosition || pos.coords.accuracy < preloadedPosition.coords.accuracy) {
+                preloadedPosition = pos
+              }
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 60000, maximumAge: 0 }
+          )
+        } catch (e) {}
+      }
+    }, 2500)
 
     const greeting = document.getElementById('greeting')
     const nameInputWrapper = document.getElementById('nameInputWrapper')
